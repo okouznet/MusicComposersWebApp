@@ -2,7 +2,6 @@ from flask import *
 import os
 
 import PianoPlayer
-import numpy as np
 
 app = Flask(__name__)
 piano = PianoPlayer.PianoPlayer()
