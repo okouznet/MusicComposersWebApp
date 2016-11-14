@@ -140,4 +140,4 @@ def library():
         return render_template('library.html', **options)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
