@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link rel="stylesheet" href="/static/composeStyle.css"/>
+</head>
+<script type="text/javascript">
+    function check(){
+        method = "POST";
+        var act = "{{ url_for('edit') }}";
+        var form = document.createElement("form");
+        form.setAttribute("method", method);
+        form.setAttribute("action", act);
+
+        {% for filename in library %}
+            var marked = document.getElementById("{{ filename }}").checked;
+            if(marked){
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", "{{ filename }}");
+                hiddenField.setAttribute("value", "{{ filename }}");
+
+                form.appendChild(hiddenField);
+            }
+        {% endfor %}
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+<header>
+    <div class="header1">
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+    </div>
+</header>
+<h1>Welcome to your Music Library!</h1>
+{% for filename in library%}
+	<div>
+		<form method="POST" action="{{url_for('library')}}">
+			<input type="checkbox" id="{{ filename }}">
+			<input type="hidden" value="{{filename}}" name="filename"/>
+			<button type="submit" name="op" value="play">Play Back</button>
+			<button type="submit" name="op" value="export">Export</button>
+			<button type="submit" name="op" value="discard">Discard</button>
+			{{filename}}
+		</form>
+	</div>
+{% endfor %}
+<body>
+    <button type="submit" name="op" value="edit" onclick="check()">Edit</button>
+
+</body>
+
+<footer>
+    <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
+</footer>
+</html>

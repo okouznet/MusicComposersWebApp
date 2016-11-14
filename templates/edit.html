@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+    <link rel="stylesheet" href="/static/composeStyle.css"/>
+    <link rel="stylesheet" href="/static/midi_table/style.css"/>
+    <script src="/static/midi_table/redips-drag-min.js" type="text/javascript"></script>
+    <script src="/static/midi_table/script.js" type="text/javascript"></script>
+        <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
+    <script src="/static/MIDI.js/inc/shim/Base64.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
+
+    <!-- jasmid package -->
+	<script src="/static/MIDI.js/inc/jasmid/stream.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/jasmid/midifile.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/jasmid/replayer.js" type="text/javascript"></script>
+	<!-- midi.js package -->
+	<script src="/static/MIDI.js/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/gm.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/loader.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/js/midi/player.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/js/midi/synesthesia.js" type="text/javascript"></script>
+
+	<!-- utils -->
+	<script src="/static/MIDI.js/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/util/dom_request_script.js" type="text/javascript"></script>
+    <script src="/static/midi_file.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/JZZ.Midi.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/JZZ.MidiFile.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
+
+
+</head>
+<header>
+    <div class="header1">
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+    </div>
+</header>
+
+<script>
+data = [];
+columns = [];
+notes = [];
+window.onload = function () {
+    data = {{ data|tojson }};
+    columns = {{ columns|tojson }};
+    var colors = {{ colors|tojson }};
+    notes = {{ notes|tojson }};
+    var x = new Array(notes.length);
+    //initialize Array
+
+    for (var i = 0; i < x.length; i++) {
+        x[i] = data[0][notes[i]];
+    }
+
+    var result = makeTableHTML(x, colors[0]);
+    $('#redips-drag').html(result);
+
+    for(var i = 1; i < data.length; i++) {
+        var y = new Array(notes.length);
+
+        for(var j = 0; j < y.length; j++) {
+            y[j] = data[i][notes[j]];
+        }
+        addFile(y, colors[i]);
+    }
+
+
+    MIDI.loadPlugin({
+		    soundfontUrl: "/static/MIDI.js/examples/soundfont/",
+		    instrument: "acoustic_grand_piano",
+		    onprogress: function(state, progress) {
+			    console.log(state, progress);
+		    },
+		    onsuccess: function(evt) {
+                console.log(evt);
+            }
+    });
+};
+
+function playTable() {
+    //gets table
+    var table = document.getElementById('table');
+    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
+    //loops through rows - index 1 to skip headers
+    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
+        container[i] = [];
+    }
+    for (var i = 0; i < notes.length; i++) {
+        //var cells = table.rows.item(i).cells;
+        var pause = 1;
+        for(var j = 0; j < columns.length; j++){
+
+            var whichId = notes[i].toString() + "_" + columns[j].toString();
+
+
+            var x = document.getElementById(whichId);
+            if (x.innerHTML != '') {
+                var key = x.querySelector(".key").innerHTML;
+                var duration = x.querySelector(".duration").innerHTML;
+                var volume = x.querySelector(".volume").innerHTML;
+                var note = {key: key, duration: duration, volume: volume};
+                var n = container[j];
+                n.push(note);
+                container[j] = n;
+
+            }
+        }
+    }
+
+    //MIDI.setVolume(0, 100,0);
+    container = container.filter(function(n){ return n != '' });
+
+    var noteEvents = [];
+    container.forEach(function(note) {
+        //ADD: pause
+        Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
+    });
+    var track = new MidiTrack({ events: noteEvents });
+    var song  = MidiWriter({ tracks: [track] });
+
+    var file = "data:audio/midi;base64," + song.b64;
+    MIDI.Player.loadFile(file, MIDI.Player.start);
+    MIDI.Player.start();
+}
+
+
+function makeTableHTML(myArray, color) {
+    var result = "<table id='table'>";
+    result += "<colgroup>";
+    for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
+        result += "<col width='100'/>"
+    }
+    result += "</colgroup>";
+    result += "<tbody><tr><th></th>";
+    for (var i = 0; i < columns.length; i++) {
+        result += "<th>"+ columns[i]+"</th>";
+    }
+    result += "</tr>";
+    for(var i=0; i<myArray.length; i++) {
+        result += "<td>" + MIDI.noteToKey[notes[i]] + "</td>";
+        for(var j=0; j<myArray[i].length; j++){
+            var whichId = notes[i].toString() + "_" + columns[j].toString();
+            if(myArray[i][j]== 1) {
+                //alert(notes[i]);
+                result += "<td id = " + whichId +">" +
+                        "<div class='redips-drag' style='border: 2px solid " +color+";'" +
+                        "onclick='editNote(\"" + whichId + "\");'>"+
+                        "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
+                        "</div>" +
+                        "</td>";
+            } else {
+                result += "<td id = " + whichId + "></td>";
+            }
+        }
+        result += "</tr>";
+    }
+    result += "</table>";
+
+    return result;
+}
+function addFile(myArray, color){
+    for (var i = 0; i < myArray.length; i++) {
+        for (var j = 0; j < myArray[i].length; j++) {
+            if(myArray[i][j] == 1) {
+                var id = notes[i].toString() + "_" + columns[j].toString();
+                var div = document.createElement("div");
+                div.className = 'redips-drag';
+                div.style.cssText = "border: 2px solid " +color+";";
+                div.addEventListener('click', function(){
+                    editNote(id);
+                });
+                div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
+                                "</div><div class = 'duration'>"+128+
+                                "</div><div class = 'volume'>"+90+"</div>";
+                document.getElementById(id).appendChild(div);
+            }
+        }
+    }
+}
+
+function editNote(whichId){
+    var form = "<div id = 'form'>";
+    form += "Duration: <input type='text' id='form_duration'>";
+    form += " Volume: <input type='text' id='form_volume'> ";
+    form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
+    form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
+    form += "</div>";
+
+    $('#edit-note').html(form);
+}
+
+function updateNote(whichId) {
+
+    var duration = document.getElementById("form_duration").value;
+    var volume = document.getElementById("form_volume").value;
+
+    //update note in table
+    document.getElementById(whichId).querySelector(".duration").innerHTML = duration;
+    document.getElementById(whichId).querySelector(".volume").innerHTML = volume;
+
+}
+// showMenu function
+function showMenu(whichId) {//
+	// first hide everything (comment out if not needed)
+	hideAll();
+	// set the correct ID to visible
+	document.getElementById('menu').style.visibility = "visible";
+
+}
+
+// hideAll function
+function hideAll() {
+	document.getElementById('menu').style.visibility = "hidden";
+}
+// delete function
+function deleteNote(whichId) {
+    document.getElementById(whichId).innerHTML = '';
+}
+</script>
+
+
+<h1>Edit your music!</h1>
+
+
+<body onload="REDIPS.drag.init()">
+<div id = "redips-drag"> </div>
+<button onclick="playTable()">Play</button>
+<div id = "edit-note"></div>
+<div id="menu" style="visibility:hidden">
+            <ul>
+                <li id="l1">Delete</li>
+            </ul>
+   </div>
+</body>
+
+
+</html>

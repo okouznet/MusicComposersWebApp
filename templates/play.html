@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Play</title>
+    <link rel="stylesheet" href="/static/composeStyle.css"/>
+    <script src="/static/MIDI.js/inc/shim/Base64.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+	<!-- midi.js package -->
+	<script src="/static/MIDI.js/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/gm.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/loader.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+	<!-- utils -->
+	<script src="/static/MIDI.js/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="/static/MIDI.js/js/util/dom_request_script.js" type="text/javascript"></script>
+    <script src="/static/MIDI.js/JZZ.Midi.js"></script>
+    <script src="/static/MIDI.js/JZZ.MidiFile.js"></script>
+</head>
+<script type="text/javascript">
+    //create midi file
+    mf = new JZZ_.MidiFile(1,100);
+    //MIDI file tracks
+    var tr0 = new JZZ_.MidiFile.MTrk; mf.push(tr0); // First track in Type 1 MIDI file is normally used for tempo changes
+    var tr1 = new JZZ_.MidiFile.MTrk; mf.push(tr1); // This one will be for the music
+
+
+    window.onload = function () {
+	    MIDI.loadPlugin({
+		    soundfontUrl: "/static/MIDI.js/examples/soundfont/",
+		    instrument: "acoustic_grand_piano",
+		    onprogress: function(state, progress) {
+			    console.log(state, progress);
+		    },
+		    onsuccess: function(evt) {
+			    console.log(evt);
+		    }
+	    });
+    };
+    function PlayNote(note) {
+        var delay = 0; // play one note every quarter second
+        var velocity = 127; // how hard the note hits
+        // play the note
+        MIDI.setVolume(0, 127);
+        MIDI.chordOn(0, note, velocity, delay);
+        MIDI.chordOff(0, note, delay + 0.75);
+    }
+    var note_map = {
+        //90:"C-4"
+
+        90:60,//z key - C
+        83:61,//s key - C#
+        88:62,//x key - D
+        68:63, //d key - D#
+        67:64,//c key - E
+        86:65,//v key - F
+        71:66,//g key - F#
+        66:67,//b key - G
+        72:68,//h key - G#
+        78:69,//n key - A
+        74:70, //j key - A#
+        77:71//m key - B
+
+    };
+    var keys = {};
+    document.onkeydown = function (event) {
+        keys[event.which] = true;
+        var notes = [];
+
+        for (var i in keys) {
+            notes.push(note_map[i]);
+        }
+        PlayNote(notes);
+    }
+
+    document.onkeyup = function(event) {
+        delete keys[event.which];
+    }
+
+</script>
+<header>
+    <div class="header1">
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+    </div>
+</header>
+<h1>Play some music!</h1>
+<body>
+    <button>Lower Octave</button>
+    <button>Higher Octave</button>
+    <div class="container" >
+        <div style="position:absolute">
+            {% for key in whitekeys %}
+                <div id="whitekey_{{ key }}" class="whitekey">
+                    {{key}}
+                </div>
+            {% endfor %}
+        </div>
+        <div style="z-index: 2; position: relative;" >
+            {% for key in blackkeys %}
+                <div id="blackkey_{{ key }}" class="blackkey">
+                    <font color="azure">{{ key }}</font>
+                </div>
+                {% if i == key %}
+                    <div id="filler" class="filler"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+
+    </div>
+
+</body>
+<footer>
+    <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
+</footer>
+</html>

@@ -1,0 +1,24 @@
+.whitekey {
+    display: inline-block;
+    width: 100px;
+    height: 400px;
+    border: solid black 1px;
+}
+.blackkey {
+    display: inline-block;
+    width: 50px;
+    height: 250px;
+    margin-right: 50px;
+    margin-left: 50px;
+    background-color: black;
+}
+.container {
+    width: 70%;
+    height: 405px;
+    margin: auto;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+body{
+    
+}

@@ -1,0 +1,156 @@
+div.center {
+	margin: 0 auto;
+	max-width: 670px;
+}
+
+header {
+	background-color: gray;
+	color: white;
+	width: 100%;
+}
+
+.header {
+	text-decoration: none;
+	font-weight: bold;
+	color: white;
+	padding-top: 10px;
+	font-size: 28px;
+}
+
+.header:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: #00FFAF;
+}
+.header1 {
+	color:white;
+	text-align: center;
+	padding-top: 10px;
+	width: 100%;
+}
+
+.header2 {
+	background-color: gray;
+	color:white;
+	text-align: right;
+	width: 100%;
+}
+
+.header3 {
+    text-decoration: none;
+    color:black;
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.header3:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: #00FFAF;
+}
+
+.whitekey {
+    display: inline-block;
+    width: 100px;
+    height: 400px;
+    border: solid black 1px;
+    background-color: white;
+}
+.blackkey {
+    display: inline-block;
+    width: 50px;
+    height: 250px;
+    margin-right: 1px;
+    margin-left: 51px;
+    background-color: black;
+}
+
+.filler {
+	display: inline-block;
+	width: 1px;
+	height: 1px;
+	margin-right: 50px;
+	margin-left: 51px;
+	background-color: white;
+    z-index: -1;
+}
+
+.after-box {
+    border: 3px solid aliceblue;
+}
+.container {
+    width: 70%;
+    height: 405px;
+    margin: auto;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.container2 {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+body{
+    background-color: aliceblue;
+}
+.footer {
+	background-color: white;
+	color: gray;
+	clear: both;
+	text-align: center;
+	padding-top: 15px;
+	width: 100%;
+	position: fixed;
+	bottom:0px;
+}
+
+footer {
+	background-color: black;
+	color: white;
+	clear: both;
+	text-align: center;
+	padding: 5px;
+	margin-top: 20px;
+	position: fixed;
+	bottom:0px;
+	width: 100%;
+}
+div.nav1 {
+	margin: 0 auto;
+	line-height: 30px;
+	background-color: #00FFAF;
+	height: 250px;
+	width: 190px;
+	float: left;
+	padding: 5px;
+}
+
+div.nav2 {
+	margin: 0 auto;
+	line-height: 30px;
+	background-color: #00FFAF;
+	height: 250px;
+	width: 190px;
+	float: left;
+	padding: 5px;
+}
+
+.selection {
+    width: 250px;
+    float: left;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.nav_link {
+	text-decoration: none;
+	margin-right: 10px;
+	color: white;
+}
+
+.nav_link:hover {
+	text-decoration: none;
+	color: #00FFAF;
+}

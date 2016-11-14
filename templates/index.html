@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Composer</title>
+    <link rel="stylesheet" href="/static/composeStyle.css"/>
+</head>
+<header>
+    <div class="header1">
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+    </div>
+</header>
+<h1>Welcome to your Music Composer!</h1>
+<body>
+    <div class="selection">
+        <h2>
+            <a class="header3" id="nav_play" href="{{url_for('play')}}">Play Music</a>
+        </h2>
+        <h2>
+            <a class="header3" id="nav_compose" href="{{url_for('compose')}}">Compose Music</a>
+        </h2>
+        <h2>
+            <a class="header3" id="nav_library" href="{{url_for('library')}}">Music Library</a>
+        </h2>
+        <h2>
+            <a class="header3" id="nav_settings" href="{{url_for('settings')}}">Settings</a>
+        </h2>
+    </div>
+</body>
+
+<footer>
+<p>
+    Brought to you by Nicola, Sasha, Alden and Amit</p>
+</footer>
+ 
+</html>
