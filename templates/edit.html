@@ -1,244 +1,265 @@
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Edit</title>
-    <link rel="stylesheet" href="/static/composeStyle.css"/>
-    <link rel="stylesheet" href="/static/midi_table/style.css"/>
-    <script src="/static/midi_table/redips-drag-min.js" type="text/javascript"></script>
-    <script src="/static/midi_table/script.js" type="text/javascript"></script>
-        <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
-    <script src="/static/MIDI.js/inc/shim/Base64.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/inc/shim/Base64binary.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
-    <script src="/static/MIDI.js/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
-
-    <!-- jasmid package -->
-	<script src="/static/MIDI.js/inc/jasmid/stream.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/inc/jasmid/midifile.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/inc/jasmid/replayer.js" type="text/javascript"></script>
-	<!-- midi.js package -->
-	<script src="/static/MIDI.js/js/midi/audioDetect.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/midi/gm.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/midi/loader.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/midi/plugin.audiotag.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/midi/plugin.webaudio.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/midi/plugin.webmidi.js" type="text/javascript"></script>
-    <script src="/static/MIDI.js/js/midi/player.js" type="text/javascript"></script>
-    <script src="/static/MIDI.js/js/midi/synesthesia.js" type="text/javascript"></script>
-
-	<!-- utils -->
-	<script src="/static/MIDI.js/js/util/dom_request_xhr.js" type="text/javascript"></script>
-	<script src="/static/MIDI.js/js/util/dom_request_script.js" type="text/javascript"></script>
-    <script src="/static/midi_file.js" type="text/javascript"></script>
-    <script src="/static/MIDI.js/JZZ.Midi.js" type="text/javascript"></script>
-    <script src="/static/MIDI.js/JZZ.MidiFile.js" type="text/javascript"></script>
+    <title>Play</title>
+    <link rel="stylesheet" href="../static/composeStyle.css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 
+    <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
+    <script src="../static/midi_files/inc/shim/Base64.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
 
+    <!-- jasmid package -->
+    <script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
+    <!-- midi.js package -->
+    <script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/player.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/synesthesia.js" type="text/javascript"></script>
+
+    <!-- utils -->
+    <script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
+    <script src="../static/midi_files/midi_file.js" type="text/javascript"></script>
+    <script src="../static/midi_files/JZZ.Midi.js" type="text/javascript"></script>
+    <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
 </head>
+<script type="text/javascript">
+
+    octave = 4;
+    var Track = [];
+    var record = 0;
+    window.onload = function () {
+
+        document.getElementById('oct').innerHTML = "Current octave: " + octave;
+
+        MIDI.loadPlugin({
+            soundfontUrl: "../static/midi_files/examples/soundfont/",
+            instrument: "acoustic_grand_piano",
+            onprogress: function(state, progress) {
+                console.log(state, progress);
+            },
+            onsuccess: function(evt) {
+                console.log(evt);
+            }
+        });
+    };
+    function PlayNote(note) {
+        var delay = 0; // play one note every quarter second
+        var velocity = 127; // how hard the note hits
+        // play the note
+        MIDI.setVolume(0, 127);
+        MIDI.chordOn(0, note, velocity, delay);
+        MIDI.chordOff(0, note, delay + 0.75);
+    }
+
+    function PlayTrack() {
+        var noteEvents = [];
+        Track.forEach(function(note) {
+            Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
+        });
+        // Create a track that contains the events to play the notes above
+        var track = new MidiTrack({ events: noteEvents });
+        // Creates an object that contains the final MIDI track in base64
+        var song  = MidiWriter({ tracks: [track] });
+
+        //reset Track
+        Track.length = 0;
+
+        // Play the song
+        var file = "data:audio/midi;base64," + song.b64;
+        MIDI.Player.loadFile(file, MIDI.Player.start);
+        MIDI.Player.start();
+    }
+
+    function SaveTrack() {
+        $.ajax({
+                 url: '/compose',
+                 data: {save: 1},
+                 type: 'POST',
+                 success: function (response) {
+                     console.log(response);
+                 },
+
+                 error: function (error) {
+                     console.log(error);
+                 }
+        });
+    }
+    function startRecord() {
+        record = 1
+    }
+    function stopRecord() {
+        record = 0;
+    }
+
+    function LowOctave() {
+        //BUG: sometimes if JS lags, doesn't change octave right away
+       if(octave >= 3){
+           octave = octave - 1;
+       }
+       document.getElementById('oct').innerHTML = "Current octave: " + octave;
+   }
+
+   function HighOctave() {
+       //BUG: sometimes if JS lags, doesn't change octave right away
+       if(octave <= 7){
+           octave = octave +1;
+       }
+       document.getElementById('oct').innerHTML = "Current octave: " + octave;
+   }
+
+    var keys = {};
+    var start = 0;
+    var end = 0;
+    document.onkeydown = function (event) {
+        start = +new Date();
+
+        var note_map = {
+        //90:"C-4"
+
+            90:12*octave,//z key - C
+            83:12*octave+1,//s key - C#
+            88:12*octave+2,//x key - D
+            68:12*octave+3, //d key - D#
+            67:12*octave+4,//c key - E
+            86:12*octave+5,//v key - F
+            71:12*octave+6,//g key - F#
+            66:12*octave+7,//b key - G
+            72:12*octave+8,//h key - G#
+            78:12*octave+9,//n key - A
+            74:12*octave+10, //j key - A#
+            77:12*octave+11//m key - B
+
+        };
+        keys[event.which] = true;
+        var notes = [];
+        for (var i in keys) {
+            notes.push(note_map[i]);
+        }
+        PlayNote(notes);
+
+    };
+
+    document.onkeyup = function(event) {
+        end = +new Date();
+        var mingus_map = {
+            90:'C-'+octave,//z key - C
+            83:'C#-'+octave,//s key - C#
+            88:'D-'+octave,//x key - D
+            68:'D#-'+octave, //d key - D#
+            67:'E-'+octave,//c key - E
+            86:'F-'+octave,//v key - F
+            71:'F#-'+octave,//g key - F#
+            66:'G-'+octave,//b key - G
+            72:'G#-'+octave,//h key - G#
+            78:'A-'+octave,//n key - A
+            74:'A#-'+octave, //j key - A#
+            77:'B-'+octave//m key - B
+        };
+        var note_map = {
+            90:12*octave,//z key - C
+            83:12*octave+1,//s key - C#
+            88:12*octave+2,//x key - D
+            68:12*octave+3, //d key - D#
+            67:12*octave+4,//c key - E
+            86:12*octave+5,//v key - F
+            71:12*octave+6,//g key - F#
+            66:12*octave+7,//b key - G
+            72:12*octave+8,//h key - G#
+            78:12*octave+9,//n key - A
+            74:12*octave+10, //j key - A#
+            77:12*octave+11//m key - B
+
+        };
+        if(record == 1) {
+            var temp = [];
+            var mingus = [];
+            for (var i in keys) {
+                var n = {key: MIDI.noteToKey[note_map[i]], duration: end - start, volume: 90};
+                temp.push(n);
+                mingus.push(note_map[i]);
+                delete keys[i];
+            }
+            //handle empty array
+            if(temp.length > 0) {
+                Track.push(temp);
+            }
+            $.ajax({
+                 url: '/compose',
+                 data: {note: mingus, save: 0},
+                 type: 'POST',
+                 success: function (response) {
+                     console.log(response);
+                 },
+                 error: function (error) {
+                     console.log(error);
+                 }
+            });
+
+        }
+        else {
+            delete keys[event.which];
+        }
+        start = 0;
+        end = 0;
+    }
+
+</script>
 <header>
     <div class="header1">
       <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
     </div>
+    <div class="header2">
+        <a class="nav_link" id="LowerOctave" onclick="startRecord()">Start Record</a><br>
+        <a class="nav_link" id = "LowerOctave" onclick="stopRecord()">Stop Record</a><br>
+        <a class="nav_link" href="#" id="LowerOctave" onclick="PlayTrack()">Playback</a><br>
+        <a class="nav_link" href="#" id="LowerOctave" onclick="SaveTrack()">Save</a><br>
+        <a class="nav_link" id="HigherOctave" href="{{url_for('edit')}}">Edit</a><br>
+
+        <a class="nav_link" id="HigherOctave" href="{{url_for('library')}}">Library</a><br>
+    </div>
 </header>
+<h1>Compose a piece!</h1>
+<body>
+    <p id="oct"></p>
+    <button id="lower" onclick="LowOctave()">Lower Octave</button>
+    <button id="higher" onclick="HighOctave()">Higher Octave</button>
+    <div class="container">
+        <div style="position:absolute">
+            {% for key in whitekeys %}
+            <div id="whitekey_{{ key }}" class="whitekey">
+            {{key}}
+            </div>
+        {% endfor %}
+        </div>
+        <div style="z-index: 2; position: relative;" >
 
-<script>
-data = [];
-columns = [];
-notes = [];
-window.onload = function () {
-    data = {{ data|tojson }};
-    columns = {{ columns|tojson }};
-    var colors = {{ colors|tojson }};
-    notes = {{ notes|tojson }};
-    var x = new Array(notes.length);
-    //initialize Array
-
-    for (var i = 0; i < x.length; i++) {
-        x[i] = data[0][notes[i]];
-    }
-
-    var result = makeTableHTML(x, colors[0]);
-    $('#redips-drag').html(result);
-
-    for(var i = 1; i < data.length; i++) {
-        var y = new Array(notes.length);
-
-        for(var j = 0; j < y.length; j++) {
-            y[j] = data[i][notes[j]];
-        }
-        addFile(y, colors[i]);
-    }
-
-
-    MIDI.loadPlugin({
-		    soundfontUrl: "/static/MIDI.js/examples/soundfont/",
-		    instrument: "acoustic_grand_piano",
-		    onprogress: function(state, progress) {
-			    console.log(state, progress);
-		    },
-		    onsuccess: function(evt) {
-                console.log(evt);
-            }
-    });
-};
-
-function playTable() {
-    //gets table
-    var table = document.getElementById('table');
-    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
-    //loops through rows - index 1 to skip headers
-    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
-        container[i] = [];
-    }
-    for (var i = 0; i < notes.length; i++) {
-        //var cells = table.rows.item(i).cells;
-        var pause = 1;
-        for(var j = 0; j < columns.length; j++){
-
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
-
-
-            var x = document.getElementById(whichId);
-            if (x.innerHTML != '') {
-                var key = x.querySelector(".key").innerHTML;
-                var duration = x.querySelector(".duration").innerHTML;
-                var volume = x.querySelector(".volume").innerHTML;
-                var note = {key: key, duration: duration, volume: volume};
-                var n = container[j];
-                n.push(note);
-                container[j] = n;
-
-            }
-        }
-    }
-
-    //MIDI.setVolume(0, 100,0);
-    container = container.filter(function(n){ return n != '' });
-
-    var noteEvents = [];
-    container.forEach(function(note) {
-        //ADD: pause
-        Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
-    });
-    var track = new MidiTrack({ events: noteEvents });
-    var song  = MidiWriter({ tracks: [track] });
-
-    var file = "data:audio/midi;base64," + song.b64;
-    MIDI.Player.loadFile(file, MIDI.Player.start);
-    MIDI.Player.start();
-}
-
-
-function makeTableHTML(myArray, color) {
-    var result = "<table id='table'>";
-    result += "<colgroup>";
-    for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
-        result += "<col width='100'/>"
-    }
-    result += "</colgroup>";
-    result += "<tbody><tr><th></th>";
-    for (var i = 0; i < columns.length; i++) {
-        result += "<th>"+ columns[i]+"</th>";
-    }
-    result += "</tr>";
-    for(var i=0; i<myArray.length; i++) {
-        result += "<td>" + MIDI.noteToKey[notes[i]] + "</td>";
-        for(var j=0; j<myArray[i].length; j++){
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
-            if(myArray[i][j]== 1) {
-                //alert(notes[i]);
-                result += "<td id = " + whichId +">" +
-                        "<div class='redips-drag' style='border: 2px solid " +color+";'" +
-                        "onclick='editNote(\"" + whichId + "\");'>"+
-                        "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
-                        "</div>" +
-                        "</td>";
-            } else {
-                result += "<td id = " + whichId + "></td>";
-            }
-        }
-        result += "</tr>";
-    }
-    result += "</table>";
-
-    return result;
-}
-function addFile(myArray, color){
-    for (var i = 0; i < myArray.length; i++) {
-        for (var j = 0; j < myArray[i].length; j++) {
-            if(myArray[i][j] == 1) {
-                var id = notes[i].toString() + "_" + columns[j].toString();
-                var div = document.createElement("div");
-                div.className = 'redips-drag';
-                div.style.cssText = "border: 2px solid " +color+";";
-                div.addEventListener('click', function(){
-                    editNote(id);
-                });
-                div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
-                                "</div><div class = 'duration'>"+128+
-                                "</div><div class = 'volume'>"+90+"</div>";
-                document.getElementById(id).appendChild(div);
-            }
-        }
-    }
-}
-
-function editNote(whichId){
-    var form = "<div id = 'form'>";
-    form += "Duration: <input type='text' id='form_duration'>";
-    form += " Volume: <input type='text' id='form_volume'> ";
-    form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
-    form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
-    form += "</div>";
-
-    $('#edit-note').html(form);
-}
-
-function updateNote(whichId) {
-
-    var duration = document.getElementById("form_duration").value;
-    var volume = document.getElementById("form_volume").value;
-
-    //update note in table
-    document.getElementById(whichId).querySelector(".duration").innerHTML = duration;
-    document.getElementById(whichId).querySelector(".volume").innerHTML = volume;
-
-}
-// showMenu function
-function showMenu(whichId) {//
-	// first hide everything (comment out if not needed)
-	hideAll();
-	// set the correct ID to visible
-	document.getElementById('menu').style.visibility = "visible";
-
-}
-
-// hideAll function
-function hideAll() {
-	document.getElementById('menu').style.visibility = "hidden";
-}
-// delete function
-function deleteNote(whichId) {
-    document.getElementById(whichId).innerHTML = '';
-}
-</script>
-
-
-<h1>Edit your music!</h1>
-
-
-<body onload="REDIPS.drag.init()">
-<div id = "redips-drag"> </div>
-<button onclick="playTable()">Play</button>
-<div id = "edit-note"></div>
-<div id="menu" style="visibility:hidden">
-            <ul>
-                <li id="l1">Delete</li>
-            </ul>
-   </div>
+            {% for key in blackkeys %}
+                <div id="blackkey_{{ key }}" class="blackkey">
+                <font color="azure">{{ key }}</font>
+                </div>
+                {% if i == key %}
+                    <div id="filler" class="filler"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="after-box"></div>
 </body>
 
-
+<footer>
+    <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
+</footer>
 </html>
