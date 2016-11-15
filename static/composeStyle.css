@@ -1,3 +1,11 @@
+.blackkey:active {
+background-color: blueviolet;
+}
+
+.whitekey:active {
+background-color: yellow;
+}
+
 div.center {
 	margin: 0 auto;
 	max-width: 670px;
@@ -51,15 +59,24 @@ header {
 
 .whitekey {
     display: inline-block;
+	/*
     width: 100px;
     height: 400px;
+    */
+	width: 6.25em;
+	height: 25em;
     border: solid black 1px;
     background-color: white;
 }
+
 .blackkey {
     display: inline-block;
+	/*
     width: 50px;
     height: 250px;
+    */
+	width: 3.125em;
+	height: 15.625em;
     margin-right: 1px;
     margin-left: 51px;
     background-color: black;
@@ -80,7 +97,7 @@ header {
 }
 .container {
     width: 70%;
-    height: 405px;
+    /* height: 405px; */
     margin: auto;
     overflow-x: auto;
     white-space: nowrap;

@@ -10,50 +10,55 @@
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
     <script src="../static/midi_files/inc/shim/Base64.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
     <script src="../static/midi_files/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
 
     <!-- jasmid package -->
-    <script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
-    <!-- midi.js package -->
-    <script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
+	<!-- midi.js package -->
+	<script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/player.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/synesthesia.js" type="text/javascript"></script>
 
-    <!-- utils -->
-    <script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
+	<!-- utils -->
+	<script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
     <script src="../static/midi_files/midi_file.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.Midi.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
 </head>
 <script type="text/javascript">
     //create midi file
+    /*
     mf = new JZZ_.MidiFile(1,100);
     //MIDI file tracks
     var tr0 = new JZZ_.MidiFile.MTrk; mf.push(tr0); // First track in Type 1 MIDI file is normally used for tempo changes
     var tr1 = new JZZ_.MidiFile.MTrk; mf.push(tr1); // This one will be for the music
-
-
+    */
+    octave = 4;
+    keys = [];
     window.onload = function () {
-        MIDI.loadPlugin({
-            soundfontUrl: "../static/midi_files/examples/soundfont/",
-            instrument: "acoustic_grand_piano",
-            onprogress: function(state, progress) {
-                console.log(state, progress);
-            },
-            onsuccess: function(evt) {
-                console.log(evt);
-            }
-        });
+        keys = {{ whitekeys|tojson }};
+        keys.push( {{ blackkeys|tojson }});
+
+	    MIDI.loadPlugin({
+		    soundfontUrl: "../static/midi_files/examples/soundfont/",
+		    instrument: "acoustic_grand_piano",
+		    onprogress: function(state, progress) {
+			    console.log(state, progress);
+		    },
+		    onsuccess: function(evt) {
+			    console.log(evt);
+		    }
+	    });
     };
     function PlayNote(note) {
         var delay = 0; // play one note every quarter second
@@ -63,9 +68,70 @@
         MIDI.chordOn(0, note, velocity, delay);
         MIDI.chordOff(0, note, delay + 0.75);
     }
+    function LowOctave() {
+        //BUG: sometimes if JS lags, doesn't change octave right away
+       if(octave >= 3){
+           octave = octave - 1;
+       }
+       document.getElementById('oct').innerHTML = "Current octave: " + octave;
+    }
+
+    function HighOctave() {
+       //BUG: sometimes if JS lags, doesn't change octave right away
+       if(octave <= 7){
+           octave = octave +1;
+       }
+       document.getElementById('oct').innerHTML = "Current octave: " + octave;
+    }
+
+    queue = [];
+    play_song = 0;
+    function playAlong() {
+        play_song = 1;
+        queue = {{ music|tojson }};
+        queue.shift();
+    }
+
+    function PlayClickedNote(key) {
+        //90:"C-4"
+        o = octave + 1; //BUG: OCTAVE
+        var map = {
+            'C':12*o, //z key - C
+            'C#':12*o+1,//s key - C#
+            'D':12*o+2,//x key - D
+            'D#':12*o+3, //d key - D#
+            'E':12*o+4,//c key - E
+            'F':12*o+5,//v key - F
+            'F#':12*o+6,//g key - F#
+            'G':12*o+7,//b key - G
+            'G#':12*o+8,//h key - G#
+            'A':12*o+9,//n key - A
+            'A#':12*o+10, //j key - A#
+            'B':12*o+11//m key - B
+        };
+        var notes = [];
+        var x = map[key];
+        notes.push(x);
+        PlayNote(notes);
+
+    }
+    var keys = {};
+    var note_modulos = {
+        90:0,//z key - C
+        83:1,//s key - C#
+        88:2,//x key - D
+        68:3, //d key - D#
+        67:4,//c key - E
+        86:5,//v key - F
+        71:6,//g key - F#
+        66:7,//b key - G
+        72:8,//h key - G#
+        78:9,//n key - A
+        74:10, //j key - A#
+        77:11//m key - B
+     };
     var note_map = {
         //90:"C-4"
-
         90:60,//z key - C
         83:61,//s key - C#
         88:62,//x key - D
@@ -78,22 +144,42 @@
         78:69,//n key - A
         74:70, //j key - A#
         77:71//m key - B
-
     };
-    var keys = {};
     document.onkeydown = function (event) {
-        keys[event.which] = true;
-        var notes = [];
+        if(play_song == 1) {
+             var played_notes = {};
 
-        for (var i in keys) {
-            notes.push(note_map[i]);
+            keys[event.which] = true;
+            for (var i in keys) {
+                played_notes[note_modulos[i]] = true;
+            }
+            var chord = queue[0]; //peak at tp of queue
+            var correct = 0;
+            for(var i = 0; i < chord.length; i++) {
+                if (chord[i]%12 in played_notes) {
+                    correct = 1;
+                    break;
+                }
+            }
+            if(correct == 1) {
+                PlayNote(chord);
+                queue.shift();
+
+            }
         }
-        PlayNote(notes);
-    }
-
+        else {
+            keys[event.which] = true;
+            var notes = [];
+            for (var i in keys) {
+                notes.push(note_map[i]);
+            }
+            PlayNote(notes);
+        }
+    };
     document.onkeyup = function(event) {
         delete keys[event.which];
     }
+
 
 </script>
 <header>
@@ -108,14 +194,14 @@
     <div class="container" >
         <div style="position:absolute">
             {% for key in whitekeys %}
-                <div id="whitekey_{{ key }}" class="whitekey">
+                <div id="whitekey_{{ key }}" class="whitekey" onclick = "PlayClickedNote('{{ key }}')">
                     {{key}}
                 </div>
             {% endfor %}
         </div>
         <div style="z-index: 2; position: relative;" >
             {% for key in blackkeys %}
-                <div id="blackkey_{{ key }}" class="blackkey">
+                <div id="blackkey_{{ key }}" class="blackkey" onmousedown="PlayClickedNote('{{ key }}')">
                     <font color="azure">{{ key }}</font>
                 </div>
                 {% if i == key %}
@@ -126,9 +212,10 @@
 
 
     </div>
+<button onclick="playAlong()">Play Along</button>
 
 </body>
-<footer>
+<footer style = "position: fixed; bottom:0px;">
     <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
 </footer>
 </html>
