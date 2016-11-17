@@ -180,6 +180,11 @@
         delete keys[event.which];
     }
 
+    $('#blackkey_C').on('touchstart click', function(e){
+        e.stopPropagation(); e.preventDefault();
+        //your code here
+        PlayNote('C');
+    });
 
 </script>
 <header>
