@@ -6,7 +6,6 @@ from mingus.containers import Composition
 from mingus.containers.instrument import Piano
 from mingus.midi import midi_file_out
 from mingus.midi import midi_file_in
-#from mingus.midi import fluidsynth
 import math
 
 #keys = ["'C-4'", "'C#-4'", "'D-4'", "'D#-4'", "'E-4'", "'F-4'", "'F#-4'", "'G-4'", "'G#-4'", "'A-4'", "'A#-4'", "'B-4'"]
@@ -30,7 +29,6 @@ class PianoPlayer :
         mingus_notes = []
         for n in notes:
             x = Note().from_int(n)
-            print x
             mingus_notes.append(x)
         self.track.add_notes(mingus_notes, duration=duration)
 
@@ -77,12 +75,11 @@ class PianoPlayer :
             for info in bar:
                 if(info[0] == 0):
                     i = i + 1
-                print str(i) + " " + str(info[0] + i)
                 count.append(info[0] + i)
-        print count
         matrix = self.midi_matrix(track=file[0][0], total_count=len(count))
         count.pop()
         return (matrix, count)
+
 
     def midi_matrix(self, track, total_count=6):
         matrix = {}
@@ -105,3 +102,16 @@ class PianoPlayer :
 
     def getNotes(self):
         return self.notes
+
+    def make_queue(self, filename):
+        file = midi_file_in.MIDI_to_Composition(filename)
+        composition = self.buildComposition(file[0])
+        result = []
+        for track in composition[0]:
+            for bar in track:
+                for notes in bar:
+                    temp = []
+                    for n in notes[2]:
+                        temp.append(int(n))
+                    result.append(temp)
+        return result

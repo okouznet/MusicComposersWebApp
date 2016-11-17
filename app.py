@@ -1,12 +1,13 @@
 from flask import *
+import PianoPlayer
 import os
 
-import PianoPlayer
+#import numpy as np
 
 app = Flask(__name__)
+
 piano = PianoPlayer.PianoPlayer()
-colors = ["Gold","MediumSeaGreen", "Maroon" ]
-#piano.playFile(filename="static/library/file2.mid")
+colors = ["Teal","MediumSeaGreen", "Maroon" ]
 
 #home page
 @app.route('/')
@@ -19,13 +20,15 @@ def settings():
     return render_template('settings.html')
 
 #compose page
+#compose page
 @app.route('/compose', methods=['GET', 'POST'])
 def compose():
     if request.method == 'POST':
         #if saving file
         save = int(request.form["save"])
         if (save == 1):
-            piano.saveTrack(filename="file")
+            filename = str(request.form["file"])
+            piano.saveTrack(filename=filename)
         else:
             note = request.form.getlist('note[]')
             if len(note) > 0:
@@ -37,9 +40,7 @@ def compose():
         return render_template('compose.html')
     else:
         whitekeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-
         blackkeys = ['C#', 'D#', 'F#', 'G#', 'A#']
-
         options = {
             "whitekeys": whitekeys,
             "blackkeys": blackkeys,
@@ -50,6 +51,8 @@ def compose():
 #play page
 @app.route('/play', methods=['GET','POST'])
 def play():
+    music = piano.make_queue(filename="static/library/grieg_waltz.mid")
+    print music
     if request.method == 'POST':
         return render_template('play.html')
     else:
@@ -58,9 +61,10 @@ def play():
         blackkeys = ['C#', 'D#', 'F#', 'G#', 'A#']
 
         options = {
+            "music": music,
             "whitekeys": whitekeys,
             "blackkeys": blackkeys,
-            "i": 'D#'
+            "i": 'D'
         }
         return render_template('play.html', **options)
 
@@ -69,7 +73,6 @@ def play():
 def edit():
     dir_name = os.path.dirname(os.path.realpath(__file__)) + "/static/library"
     notes = piano.getNotes()
-
     if (request.method == 'GET'):
         # This code will change as get requests added
         matrix = {}
@@ -96,7 +99,6 @@ def edit():
             data.append(results[0])
             if len(x) < len(results[1]):
                 x = results[1]
-
         options = {
             "columns": x,
             "notes": notes,
@@ -108,8 +110,7 @@ def edit():
         return render_template('edit.html', **options)
 
 #library
-@app.route('/library')
-
+@app.route('/library', methods=['GET', 'POST'])
 def library():
     dir_name = os.path.dirname(os.path.realpath(__file__)) + "/static/library"
     if request.method =='POST':
@@ -118,12 +119,9 @@ def library():
         if op == "play":
             return redirect(url_for('play'))
         elif op == "edit":
-
             return redirect(url_for('edit', dir=dir_name, file = filename))
-
         elif op == "export":
-            return send_from_directory(dir_name,
-                               filename, as_attachment=True)
+            return send_from_directory(dir_name, filename, as_attachment=True)
         elif op == "discard":
             os.remove(os.path.join(dir_name, filename))
             return redirect(url_for('library'))

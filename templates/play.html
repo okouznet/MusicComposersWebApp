@@ -201,7 +201,7 @@
         </div>
         <div style="z-index: 2; position: relative;" >
             {% for key in blackkeys %}
-                <div id="blackkey_{{ key }}" class="blackkey" onmousedown="PlayClickedNote('{{ key }}')">
+                <div id="blackkey_{{ key }}" class="blackkey" onclick="PlayClickedNote('{{ key }}')">
                     <font color="azure">{{ key }}</font>
                 </div>
                 {% if i == key %}
