@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Play</title>
-    <link rel="stylesheet" href="/static/composeStyle.css"/>
+    <link rel="stylesheet" href="/static/playStyles.css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
@@ -91,7 +91,21 @@
         queue = {{ music|tojson }};
         queue.shift();
     }
-
+    var id_convert = {
+        //90:"C-4"
+        90:'C',//z key - C
+        83:'C#',//s key - C#
+        88:'D',//x key - D
+        68:'D#', //d key - D#
+        67:'E',//c key - E
+        86:'F',//v key - F
+        71:'F#',//g key - F#
+        66:'G',//b key - G
+        72:'G#',//h key - G#
+        78:'A',//n key - A
+        74:'A#', //j key - A#
+        77:'B'//m key - B
+    };
     function PlayClickedNote(key) {
         //90:"C-4"
         o = octave + 1; //BUG: OCTAVE
@@ -145,6 +159,7 @@
         74:70, //j key - A#
         77:71//m key - B
     };
+
     document.onkeydown = function (event) {
         if(play_song == 1) {
              var played_notes = {};
@@ -161,6 +176,7 @@
                     break;
                 }
             }
+
             if(correct == 1) {
                 PlayNote(chord);
                 queue.shift();
@@ -172,19 +188,31 @@
             var notes = [];
             for (var i in keys) {
                 notes.push(note_map[i]);
+                if(id_convert[i] != null) {
+                    document.getElementById(id_convert[i]).style.background = "cornflowerblue";
+                }
+
+
             }
             PlayNote(notes);
         }
     };
     document.onkeyup = function(event) {
+        for (var i in keys) {
+          if(id_convert[i] != null) {
+              var div = document.getElementById(id_convert[i]);
+              var hasClass = div.classList.contains('whitekey');
+              if (hasClass == true) {
+                  document.getElementById(id_convert[i]).style.background = "white";
+              }
+              else {
+                  document.getElementById(id_convert[i]).style.background = "black";
+              }
+          }
+        }
         delete keys[event.which];
-    }
-
-    $('#blackkey_C').on('touchstart click', function(e){
-        e.stopPropagation(); e.preventDefault();
-        //your code here
-        PlayNote('C');
-    });
+    };
+    //touch events
 
 </script>
 <header>
@@ -194,30 +222,43 @@
 </header>
 <h1>Play some music!</h1>
 <body>
-    <button>Lower Octave</button>
-    <button>Higher Octave</button>
-    <div class="container" >
-        <div style="position:absolute">
-            {% for key in whitekeys %}
-                <div id="whitekey_{{ key }}" class="whitekey" onclick = "PlayClickedNote('{{ key }}')">
-                    {{key}}
-                </div>
-            {% endfor %}
-        </div>
-        <div style="z-index: 2; position: relative;" >
-            {% for key in blackkeys %}
-                <div id="blackkey_{{ key }}" class="blackkey" onclick="PlayClickedNote('{{ key }}')">
-                    <font color="azure">{{ key }}</font>
-                </div>
-                {% if i == key %}
-                    <div id="filler" class="filler"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
-
-
+    <div class = "centerButtons">
+         <button>Lower Octave</button>
+         <button>Higher Octave</button>
+         <button onclick="playAlong()">Play Along</button>
     </div>
-<button onclick="playAlong()">Play Along</button>
+
+    <ul class = "piano" >
+        <li class = "key">
+            <span class="whitekey" id = "C" onclick="PlayClickedNote('C')"></span>
+            <span class="blackkey" id = "C#" onclick="PlayClickedNote('C#')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "D" onclick="PlayClickedNote('D')"></span>
+            <span class="blackkey" id = "D#" onclick="PlayClickedNote('D#')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "E" onclick="PlayClickedNote('E')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "F" onclick="PlayClickedNote('F')"></span>
+            <span class="blackkey" id = "F#" onclick="PlayClickedNote('F#')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "G" onclick="PlayClickedNote('G')"></span>
+            <span class="blackkey" id = "G#" onclick="PlayClickedNote('G#')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "A" onclick="PlayClickedNote('A')"></span>
+            <span class="blackkey" id = "A#" onclick="PlayClickedNote('A#')"></span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "B" onclick="PlayClickedNote('B')"></span>
+        </li>
+
+    </ul>
+
+
 
 </body>
 <footer style = "position: fixed; bottom:0px;">
