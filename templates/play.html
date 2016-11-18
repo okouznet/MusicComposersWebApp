@@ -91,21 +91,10 @@
         queue = {{ music|tojson }};
         queue.shift();
     }
-    var id_convert = {
-        //90:"C-4"
-        90:'C',//z key - C
-        83:'C#',//s key - C#
-        88:'D',//x key - D
-        68:'D#', //d key - D#
-        67:'E',//c key - E
-        86:'F',//v key - F
-        71:'F#',//g key - F#
-        66:'G',//b key - G
-        72:'G#',//h key - G#
-        78:'A',//n key - A
-        74:'A#', //j key - A#
-        77:'B'//m key - B
-    };
+    var id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
+        66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
+    var id_to_note = {0:'C', 1: 'C#', 2:"D", 3:"D#", 4:"E", 5:"F", 6:"F#",
+        7:"G", 8:"G#", 9:"A", 10:"A#", 11:"B"};
     function PlayClickedNote(key) {
         //90:"C-4"
         o = octave + 1; //BUG: OCTAVE
@@ -130,35 +119,10 @@
 
     }
     var keys = {};
-    var note_modulos = {
-        90:0,//z key - C
-        83:1,//s key - C#
-        88:2,//x key - D
-        68:3, //d key - D#
-        67:4,//c key - E
-        86:5,//v key - F
-        71:6,//g key - F#
-        66:7,//b key - G
-        72:8,//h key - G#
-        78:9,//n key - A
-        74:10, //j key - A#
-        77:11//m key - B
-     };
-    var note_map = {
-        //90:"C-4"
-        90:60,//z key - C
-        83:61,//s key - C#
-        88:62,//x key - D
-        68:63, //d key - D#
-        67:64,//c key - E
-        86:65,//v key - F
-        71:66,//g key - F#
-        66:67,//b key - G
-        72:68,//h key - G#
-        78:69,//n key - A
-        74:70, //j key - A#
-        77:71//m key - B
-    };
+    var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
+        66:7, 72:8, 78:9, 74:10, 77:11};
+    var note_map = { 90:60, 83:61, 88:62, 68:63, 67:64, 86:65,
+        71:66, 66:67, 72:68, 78:69, 74:70, 77:71 };
 
     document.onkeydown = function (event) {
         if(play_song == 1) {
@@ -178,8 +142,27 @@
             }
 
             if(correct == 1) {
+                for (var i in chord) {
+                     var x = chord[i] % 12;
+                        var div = document.getElementById(id_to_note[x]);
+                        var hasClass = div.classList.contains('whitekey');
+                        if (hasClass == true) {
+                            document.getElementById(id_to_note[x]).style.background = "white";
+                        }
+                        else {
+                            document.getElementById(id_to_note[x]).style.background = "black";
+                        }
+                }
                 PlayNote(chord);
                 queue.shift();
+                //highlight next keys
+                if(queue.length > 0) {
+                    var next_chord = queue[0];
+                    for(var i in next_chord) {
+                        var x = next_chord[i] % 12;
+                        document.getElementById(id_to_note[x]).style.background = "rosybrown";
+                    }
+                }
 
             }
         }
@@ -218,17 +201,21 @@
 <header>
     <div class="header1">
       <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+        <br>
+        <br>
     </div>
 </header>
-<h1>Play some music!</h1>
 <body>
+    <br><br><br>
     <div class = "centerButtons">
          <button>Lower Octave</button>
          <button>Higher Octave</button>
-         <button onclick="playAlong()">Play Along</button>
-    </div>
+         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+         <button onclick="playAlong()">Play Along</button><br>
 
-    <ul class = "piano" >
+    </div>
+    <div class = piano>
+    <ul>
         <li class = "key">
             <span class="whitekey" id = "C" onclick="PlayClickedNote('C')"></span>
             <span class="blackkey" id = "C#" onclick="PlayClickedNote('C#')"></span>
@@ -257,8 +244,7 @@
         </li>
 
     </ul>
-
-
+    </div>
 
 </body>
 <footer style = "position: fixed; bottom:0px;">

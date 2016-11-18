@@ -80,8 +80,9 @@
         // Play the song
         var file = "../static/library/" + filename;
         console.log(file);
-        MIDI.Player.loadFile(file, MIDI.Player.start);
-        MIDI.Player.start();
+        player = MIDI.Player;
+        player.loadFile(file, player.start);
+        player.start();
     }
 </script>
 <header>

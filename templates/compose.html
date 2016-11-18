@@ -37,7 +37,7 @@
 </head>
 <script type="text/javascript">
 
-    octave = 4;
+    octave = 4; //BUG
     var Track = [];
     var record = 0;
     window.onload = function () {
@@ -128,28 +128,6 @@
     function PlayClickedNote(key) {
         start = +new Date();
         //90:"C-4"
-        o = octave + 1; //BUG: OCTAVE
-        var map = {
-            'C':12*o, //z key - C
-            'C#':12*o+1,//s key - C#
-            'D':12*o+2,//x key - D
-            'D#':12*o+3, //d key - D#
-            'E':12*o+4,//c key - E
-            'F':12*o+5,//v key - F
-            'F#':12*o+6,//g key - F#
-            'G':12*o+7,//b key - G
-            'G#':12*o+8,//h key - G#
-            'A':12*o+9,//n key - A
-            'A#':12*o+10, //j key - A#
-            'B':12*o+11//m key - B
-        };
-        var notes = [];
-        var x = map[key];
-        notes.push(x);
-        PlayNote(notes);
-    }
-    function ReleaseClickedNote(key) {
-        end = +new Date();
         var map = {
             'C':12*octave, //z key - C
             'C#':12*octave+1,//s key - C#
@@ -164,7 +142,9 @@
             'A#':12*octave+10, //j key - A#
             'B':12*octave+11//m key - B
         };
-        if(record == 1) {
+        //save notes
+        end = +new Date();
+         if(record == 1) {
             var temp = [];
             var mingus = [];
             var n = {key: key + octave.toString(), duration: end - start, volume: 90};
@@ -190,7 +170,14 @@
         }
         start = 0;
         end = 0;
+
+        //play notes
+        var notes = [];
+        var x = map[key];
+        notes.push(x);
+        PlayNote(notes);
     }
+
     document.onkeydown = function (event) {
         start = +new Date();
 
@@ -353,7 +340,7 @@
     <div class="container">
         <div style="position:absolute">
             {% for key in whitekeys %}
-            <div id="whitekey_{{ key }}" class="whitekey" onmousedown= "PlayClickedNote('{{ key }}')" onmouseup="ReleaseClickedNote('{{ key }}')">
+            <div id="whitekey_{{ key }}" class="whitekey" onclick= "PlayClickedNote('{{ key }}')">
             {{key}}
             </div>
         {% endfor %}
@@ -361,7 +348,7 @@
         <div style="z-index: 2; position: relative;" >
 
             {% for key in blackkeys %}
-                <div id="blackkey_{{ key }}" class="blackkey" onmousedown= "PlayClickedNote('{{ key }}')" onmouseup="ReleaseClickedNote('{{ key }}')">
+                <div id="blackkey_{{ key }}" class="blackkey" onclick= "PlayClickedNote('{{ key }}')">
                 <font color="azure">{{ key }} #</font>
                 </div>
                 {% if i == key %}

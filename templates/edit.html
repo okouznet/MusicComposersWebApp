@@ -212,47 +212,7 @@ function updateNote(whichId) {
 }
 
 function saveFile() {
-    //gets table
-    var temp_notes = notes;
-    var table = document.getElementById('table');
-    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
-    //loops through rows - index 1 to skip headers
-    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
-        container[i] = [];
-    }
-    for (var i = 0; i < notes.length; i++) {
-        //var cells = table.rows.item(i).cells;
-        var pause = 1;
-        for(var j = 0; j < columns.length; j++){
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
 
-
-            var x = document.getElementById(whichId);
-            if (x.innerHTML != '') {
-                var key = x.querySelector(".key").innerHTML;
-                var duration = x.querySelector(".duration").innerHTML;
-                var volume = x.querySelector(".volume").innerHTML;
-                var note = {key: key, duration: duration, volume: volume};
-                var n = container[j];
-                n.push(note);
-                container[j] = n;
-
-            }
-        }
-    }
-    alert(container);
-    //MIDI.setVolume(0, 100,0);
-    container = container.filter(function(n){ return n != '' });
-
-    var noteEvents = [];
-    container.forEach(function(note) {
-        //ADD: pause
-        Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
-    });
-    var track = new MidiTrack({ events: noteEvents });
-    var song  = MidiWriter({ tracks: [track] });
-    notes = temp_notes;
-    song.save()
 }
 // showMenu function
 function showMenu(whichId) {//
@@ -282,7 +242,7 @@ function deleteNote(whichId) {
 <div id = "redips-drag"> </div>
 <button onclick="playTable()">Play</button>
 <button onclick="stopPlayer()">Stop</button>
-<button onclick="saveFile()">Export</button>
+<button onclick="">Export</button>
 
 <div id="menu" style="visibility:hidden">
             <ul>
