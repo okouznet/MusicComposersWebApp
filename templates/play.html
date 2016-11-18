@@ -42,13 +42,40 @@
     //MIDI file tracks
     var tr0 = new JZZ_.MidiFile.MTrk; mf.push(tr0); // First track in Type 1 MIDI file is normally used for tempo changes
     var tr1 = new JZZ_.MidiFile.MTrk; mf.push(tr1); // This one will be for the music
+
     */
     octave = 4;
     keys = [];
     window.onload = function () {
         keys = {{ whitekeys|tojson }};
         keys.push( {{ blackkeys|tojson }});
+        var all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
+        document.getElementById('C').addEventListener('click', function(){PlayClickedNote('C')}, false);
+        document.getElementById('C#').addEventListener('click', function(){PlayClickedNote('C#')}, false);
+        document.getElementById('D').addEventListener('click', function(){PlayClickedNote('D')}, false);
+        document.getElementById('D#').addEventListener('click', function(){PlayClickedNote('D#')}, false);
+        document.getElementById('E').addEventListener('click', function(){PlayClickedNote('E')}, false);
+        document.getElementById('F').addEventListener('click', function(){PlayClickedNote('F')}, false);
+        document.getElementById('F#').addEventListener('click', function(){PlayClickedNote('F#')}, false);
+        document.getElementById('G').addEventListener('click', function(){PlayClickedNote('G')}, false);
+        document.getElementById('G#').addEventListener('click', function(){PlayClickedNote('G#')}, false);
+        document.getElementById('A').addEventListener('click', function(){PlayClickedNote('A')}, false);
+        document.getElementById('A#').addEventListener('click', function(){PlayClickedNote('A#')}, false);
+        document.getElementById('B').addEventListener('click', function(){PlayClickedNote('B')}, false);
+
+        document.getElementById('C').addEventListener('touchstart', function(){PlayClickedNote('C')}, false);
+        document.getElementById('C#').addEventListener('touchstart', function(){PlayClickedNote('C#')}, false);
+        document.getElementById('D').addEventListener('touchstart', function(){PlayClickedNote('D')}, false);
+        document.getElementById('D#').addEventListener('touchstart', function(){PlayClickedNote('D#')}, false);
+        document.getElementById('E').addEventListener('touchstart', function(){PlayClickedNote('E')}, false);
+        document.getElementById('F').addEventListener('touchstart', function(){PlayClickedNote('F')}, false);
+        document.getElementById('F#').addEventListener('touchstart', function(){PlayClickedNote('F#')}, false);
+        document.getElementById('G').addEventListener('touchstart', function(){PlayClickedNote('G')}, false);
+        document.getElementById('G#').addEventListener('touchstart', function(){PlayClickedNote('G#')}, false);
+        document.getElementById('A').addEventListener('touchstart', function(){PlayClickedNote('A')}, false);
+        document.getElementById('A#').addEventListener('touchstart', function(){PlayClickedNote('A#')}, false);
+        document.getElementById('B').addEventListener('touchstart', function(){PlayClickedNote('B')}, false);
 	    MIDI.loadPlugin({
 		    soundfontUrl: "../static/midi_files/examples/soundfont/",
 		    instrument: "acoustic_grand_piano",
@@ -63,7 +90,6 @@
     function PlayNote(note) {
         var delay = 0; // play one note every quarter second
         var velocity = 127; // how hard the note hits
-        // play the note
         MIDI.setVolume(0, 127);
         MIDI.chordOn(0, note, velocity, delay);
         MIDI.chordOff(0, note, delay + 0.75);
@@ -116,7 +142,6 @@
         var x = map[key];
         notes.push(x);
         PlayNote(notes);
-
     }
     var keys = {};
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
@@ -195,7 +220,7 @@
         }
         delete keys[event.which];
     };
-    //touch events
+    //event handlers
 
 </script>
 <header>
@@ -217,30 +242,30 @@
     <div class = piano>
     <ul>
         <li class = "key">
-            <span class="whitekey" id = "C" onclick="PlayClickedNote('C')"></span>
-            <span class="blackkey" id = "C#" onclick="PlayClickedNote('C#')"></span>
+            <span class="whitekey" id = "C"></span>
+            <span class="blackkey" id = "C#"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "D" onclick="PlayClickedNote('D')"></span>
-            <span class="blackkey" id = "D#" onclick="PlayClickedNote('D#')"></span>
+            <span class="whitekey" id = "D"></span>
+            <span class="blackkey" id = "D#"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "E" onclick="PlayClickedNote('E')"></span>
+            <span class="whitekey" id = "E"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "F" onclick="PlayClickedNote('F')"></span>
-            <span class="blackkey" id = "F#" onclick="PlayClickedNote('F#')"></span>
+            <span class="whitekey" id = "F"></span>
+            <span class="blackkey" id = "F#"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "G" onclick="PlayClickedNote('G')"></span>
-            <span class="blackkey" id = "G#" onclick="PlayClickedNote('G#')"></span>
+            <span class="whitekey" id = "G"></span>
+            <span class="blackkey" id = "G#"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "A" onclick="PlayClickedNote('A')"></span>
-            <span class="blackkey" id = "A#" onclick="PlayClickedNote('A#')"></span>
+            <span class="whitekey" id = "A"></span>
+            <span class="blackkey" id = "A#"></span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "B" onclick="PlayClickedNote('B')"></span>
+            <span class="whitekey" id = "B"></span>
         </li>
 
     </ul>

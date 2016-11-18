@@ -88,6 +88,19 @@ header {
     /*float: center;*/
 }
 
+.key .whitekey:hover,
+.key .whitekey.hover {
+  background: cornflowerblue;
+}
+
+.key .blackkey:hover,
+.key .blackkey.hover {
+    background-color: cornflowerblue;
+}
+.centerButtons {
+    text-align: center;
+    /*float: center;*/
+}
 button {
     background-color: cornflowerblue;
     border: none;
