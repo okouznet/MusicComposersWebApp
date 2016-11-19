@@ -62,8 +62,8 @@
         var theParent = document.querySelector(".piano");
         theParent.addEventListener("mousedown", clickDown, false);
         theParent.addEventListener("mouseup", clickUp, false);
-        //theParent.addEventListener("touchstart", clickDown, false);
-        //theParent.addEventListener("touchend", clickUp, false);
+        theParent.addEventListener("touchstart", clickDown, false);
+        theParent.addEventListener("touchend", clickUp, false);
 
         MIDI.loadPlugin({
             soundfontUrl: "../static/midi_files/examples/soundfont/",
@@ -80,15 +80,16 @@
     function clickDown(e) {
         if (e.target !== e.currentTarget) {
             var id = e.target.id;
-            PlayClickedNote(id);
+            //PlayClickedNote(id);
             document.getElementById(id).style.background = "cornflowerblue";
         }
-
     e.stopPropagation();
     }
 
     function clickUp(e) {
         var id = e.target.id;
+        PlayClickedNote(id);
+
         var div = document.getElementById(id);
             var hasClass = div.classList.contains('whitekey');
             if (hasClass == true) {
