@@ -10,27 +10,27 @@
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
     <script src="../static/midi_files/inc/shim/Base64.js" type="text/javascript"></script>
-	<script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
-	<script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
     <script src="../static/midi_files/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
 
     <!-- jasmid package -->
-	<script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
-	<script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
-	<script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
-	<!-- midi.js package -->
-	<script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
+    <script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
+    <!-- midi.js package -->
+    <script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/player.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/synesthesia.js" type="text/javascript"></script>
 
-	<!-- utils -->
-	<script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
-	<script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
+    <!-- utils -->
+    <script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
+    <script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
     <script src="../static/midi_files/midi_file.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.Midi.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
@@ -62,17 +62,19 @@
         var theParent = document.querySelector(".piano");
         theParent.addEventListener("mousedown", clickDown, false);
         theParent.addEventListener("mouseup", clickUp, false);
+        theParent.addEventListener("touchstart", clickDown, false);
+        theParent.addEventListener("touchend", clickUp, false);
 
-	    MIDI.loadPlugin({
-		    soundfontUrl: "../static/midi_files/examples/soundfont/",
-		    instrument: "acoustic_grand_piano",
-		    onprogress: function(state, progress) {
-			    console.log(state, progress);
-		    },
-		    onsuccess: function(evt) {
-			    console.log(evt);
-		    }
-	    });
+        MIDI.loadPlugin({
+            soundfontUrl: "../static/midi_files/examples/soundfont/",
+            instrument: "acoustic_grand_piano",
+            onprogress: function(state, progress) {
+                console.log(state, progress);
+            },
+            onsuccess: function(evt) {
+                console.log(evt);
+            }
+        });
     };
 
     function clickDown(e) {
@@ -129,7 +131,6 @@
         queue = {{ music|tojson }};
         queue.shift();
         var chord = queue[0];
-        alert(chord);
         for (var i = 0; i < chord.length; i++) {
             var x = id_to_note[chord[i] % 12];
             document.getElementById(x).style.background = "rosybrown";
