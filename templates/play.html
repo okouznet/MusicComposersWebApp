@@ -51,18 +51,18 @@
         keys.push( {{ blackkeys|tojson }});
         var all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-        document.getElementById('C').addEventListener('click', function(){PlayClickedNote('C')}, false);
-        document.getElementById('C#').addEventListener('click', function(){PlayClickedNote('C#')}, false);
-        document.getElementById('D').addEventListener('click', function(){PlayClickedNote('D')}, false);
-        document.getElementById('D#').addEventListener('click', function(){PlayClickedNote('D#')}, false);
-        document.getElementById('E').addEventListener('click', function(){PlayClickedNote('E')}, false);
-        document.getElementById('F').addEventListener('click', function(){PlayClickedNote('F')}, false);
-        document.getElementById('F#').addEventListener('click', function(){PlayClickedNote('F#')}, false);
-        document.getElementById('G').addEventListener('click', function(){PlayClickedNote('G')}, false);
-        document.getElementById('G#').addEventListener('click', function(){PlayClickedNote('G#')}, false);
-        document.getElementById('A').addEventListener('click', function(){PlayClickedNote('A')}, false);
-        document.getElementById('A#').addEventListener('click', function(){PlayClickedNote('A#')}, false);
-        document.getElementById('B').addEventListener('click', function(){PlayClickedNote('B')}, false);
+        document.getElementById('C').addEventListener('mousedown', function(){PlayClickedNote('C')}, false);
+        document.getElementById('C#').addEventListener('mousedown', function(){PlayClickedNote('C#')}, false);
+        document.getElementById('D').addEventListener('mousedown', function(){PlayClickedNote('D')}, false);
+        document.getElementById('D#').addEventListener('mousedown', function(){PlayClickedNote('D#')}, false);
+        document.getElementById('E').addEventListener('mousedown', function(){PlayClickedNote('E')}, false);
+        document.getElementById('F').addEventListener('mousedown', function(){PlayClickedNote('F')}, false);
+        document.getElementById('F#').addEventListener('mousedown', function(){PlayClickedNote('F#')}, false);
+        document.getElementById('G').addEventListener('mousedown', function(){PlayClickedNote('G')}, false);
+        document.getElementById('G#').addEventListener('mousedown', function(){PlayClickedNote('G#')}, false);
+        document.getElementById('A').addEventListener('mousedown', function(){PlayClickedNote('A')}, false);
+        document.getElementById('A#').addEventListener('mousedown', function(){PlayClickedNote('A#')}, false);
+        document.getElementById('B').addEventListener('mousedown', function(){PlayClickedNote('B')}, false);
         /*
         document.getElementById('C').addEventListener('touchstart', function(){PlayClickedNote('C')}, false);
         document.getElementById('C#').addEventListener('touchstart', function(){PlayClickedNote('C#')}, false);
@@ -113,24 +113,31 @@
 
     queue = [];
     play_song = 0;
-    function playAlong() {
+    function startPlayAlong() {
         play_song = 1;
         queue = {{ music|tojson }};
         queue.shift();
     }
+
+    function stopPlayAlong() {
+        play_song = 0;
+        queue = [];
+    }
+
     var id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
         66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
     var id_to_note = {0:'C', 1: 'C#', 2:"D", 3:"D#", 4:"E", 5:"F", 6:"F#",
         7:"G", 8:"G#", 9:"A", 10:"A#", 11:"B"};
-    function PlayClickedNote(key) {
-        var map = { 'C':0, 'C#':1, 'D':2, 'D#':3, 'E':4, 'F':5, 'F#':6,
+    var note_to_modulus = { 'C':0, 'C#':1, 'D':2, 'D#':3, 'E':4, 'F':5, 'F#':6,
             'G':7, 'G#':8, 'A':9, 'A#':10, 'B':11 };
+
+    function PlayClickedNote(key) {
         if (play_song == 1) {
             var chord = queue[0];
             var correct = 0;
 
             for(var i = 0; i < chord.length; i++) {
-                if (chord[i]%12 == map[key]) {
+                if (chord[i]%12 == note_to_modulus[key]) {
                     correct = 1;
                     break;
                 }
@@ -160,25 +167,24 @@
 
             }
         }
-        //90:"C-4"
-        o = octave + 1; //BUG: OCTAVE
-        var map = { 'C':12*o,
-            'C#':12*o+1,
-            'D':12*o+2,
-            'D#':12*o+3,
-            'E':12*o+4,
-            'F':12*o+5,
-            'F#':12*o+6,
-            'G':12*o+7,//b key - G
-            'G#':12*o+8,//h key - G#
-            'A':12*o+9,//n key - A
-            'A#':12*o+10, //j key - A#
-            'B':12*o+11//m key - B
-        };
-        var notes = [];
-        var x = map[key];
-        notes.push(x);
-        PlayNote(notes);
+        else {
+            o = octave + 1; //BUG: OCTAVE
+            var map = { 'C':12*o, 'C#':12*o+1, 'D':12*o+2, 'D#':12*o+3, 'E':12*o+4, 'F':12*o+5, 'F#':12*o+6,
+                'G':12*o+7, 'G#':12*o+8, 'A':12*o+9, 'A#':12*o+10, 'B':12*o+11 };
+            var notes = [];
+            var x = map[key];
+            notes.push(x);
+            PlayNote(notes);
+        }
+    }
+
+    function playTouchedNote(evt) {
+        evt.preventDefault();
+        var touches = evt.changedTouches;
+        alert(touches.length);
+        for (var i = 0; i < touches.length; i++) {
+            alert(touches[i])
+        }
     }
     var keys = {};
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
@@ -273,7 +279,8 @@
          <button>Lower Octave</button>
          <button>Higher Octave</button>
          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-         <button onclick="playAlong()">Play Along</button><br>
+         <button onclick="startPlayAlong()">Play Along</button>
+        <button onclick="stopPlayAlong()">Stop Play Along</button>
 
     </div>
     <div class = piano>
