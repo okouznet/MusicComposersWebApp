@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit</title>
-    <link rel="stylesheet" href="/static/composeStyle.css"/>
     <link rel="stylesheet" href="/static/midi_table/style.css"/>
     <script src="/static/midi_table/redips-drag-min.js" type="text/javascript"></script>
     <script src="/static/midi_table/script.js" type="text/javascript"></script>
@@ -37,11 +36,6 @@
     <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
 
 </head>
-<header>
-    <div class="header1">
-      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
-    </div>
-</header>
 
 <script>
 data = [];
@@ -93,7 +87,6 @@ function playTable() {
         container[i] = [];
     }
     for (var i = 0; i < notes.length; i++) {
-        //var cells = table.rows.item(i).cells;
         var pause = 1;
         for(var j = 0; j < columns.length; j++){
             var whichId = notes[i].toString() + "_" + columns[j].toString();
@@ -101,7 +94,8 @@ function playTable() {
 
             var x = document.getElementById(whichId);
             if (x.innerHTML != '') {
-                var key = x.querySelector(".key").innerHTML;
+                //var key = x.querySelector(".key").innerHTML;
+                var key = MIDI.noteToKey[notes[i]];
                 var duration = x.querySelector(".duration").innerHTML;
                 var volume = x.querySelector(".volume").innerHTML;
                 var note = {key: key, duration: duration, volume: volume};
@@ -112,6 +106,7 @@ function playTable() {
             }
         }
     }
+
     //MIDI.setVolume(0, 100,0);
     container = container.filter(function(n){ return n != '' });
 
@@ -143,24 +138,24 @@ function makeTableHTML(myArray, color) {
     result += "</colgroup>";
     result += "<tbody><tr><th></th>";
     for (var i = 0; i < columns.length; i++) {
-        result += "<th>"+ columns[i]+"</th>";
+        result += "<th class = 'table-header'>"+ columns[i]+"</th>";
     }
     result += "</tr>";
     for(var i=0; i<myArray.length; i++) {
-        result += "<td>" + MIDI.noteToKey[notes[i]] + "</td>";
+        result += "<td class = 'table-header'>" + MIDI.noteToKey[notes[i]] + "</td>";
         for(var j=0; j<columns.length; j++){
 
             var whichId = notes[i].toString() + "_" + columns[j].toString();
             if(myArray[i][j]== 1) {
                 //alert(notes[i]);
-                result += "<td id = " + whichId +">" +
-                        "<div class='redips-drag' style='border: 2px solid " +color+";'" +
-                        "onclick='editNote(\"" + whichId + "\");'>"+
+                result += "<td id = " + whichId +" onclick='editNote(\"" + whichId + "\");'>" +
+                        "<div class='redips-drag' style='border: 2px solid " +color+";'>" +
+
                         "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
                         "</div>" +
                         "</td>";
             } else {
-                result += "<td id = " + whichId + "></td>";
+                result += "<td id = " + whichId +" onclick='editNote(\"" + whichId + "\");'>";
             }
         }
         result += "</tr>";
@@ -173,31 +168,34 @@ function addFile(myArray, color){
     for (var i = 0; i < myArray.length; i++) {
         for (var j = 0; j < myArray[i].length; j++) {
             if(myArray[i][j] == 1) {
-                var id = notes[i].toString() + "_" + columns[j].toString();
+                var my_id = notes[i].toString() + "_" + columns[j].toString();
                 var div = document.createElement("div");
                 div.className = 'redips-drag';
                 div.style.cssText = "border: 2px solid " +color+";";
-                div.addEventListener('click', function(){
-                    editNote(id);
-                });
+                //div.addEventListener('click', function(){editNote(id)});
+                //div.addEventListener("click", editNote, false);
+
                 div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
                                 "</div><div class = 'duration'>"+128+
                                 "</div><div class = 'volume'>"+90+"</div>";
-                document.getElementById(id).appendChild(div);
+                document.getElementById(my_id).appendChild(div);
             }
         }
     }
 }
 
 function editNote(whichId){
+
     var form = "<div id = 'form'>";
     form += "Duration: <input type='text' id='form_duration'>";
     form += " Volume: <input type='text' id='form_volume'> ";
+   // alert(whichId);
     form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
     form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
     form += "</div>";
 
     $('#edit-note').html(form);
+
 }
 
 function updateNote(whichId) {
@@ -212,14 +210,60 @@ function updateNote(whichId) {
 }
 
 function saveFile() {
+    var filename = prompt("Please enter file name", "file name");
 
-}
-// showMenu function
-function showMenu(whichId) {//
-	// first hide everything (comment out if not needed)
-	hideAll();
-	// set the correct ID to visible
-	document.getElementById('menu').style.visibility = "visible";
+    //save track in container!
+     //gets table
+    var temp_notes = notes;
+    var table = document.getElementById('table');
+    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
+    //loops through rows - index 1 to skip headers
+    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
+        container[i] = [];
+    }
+    for (var i = 0; i < notes.length; i++) {
+        //var cells = table.rows.item(i).cells;
+        var pause = 1;
+        for(var j = 0; j < columns.length; j++){
+            var whichId = notes[i].toString() + "_" + columns[j].toString();
+
+
+            var x = document.getElementById(whichId);
+            if (x.innerHTML != '') {
+                var key = x.querySelector(".key").innerHTML;
+                if (key.length == 2) {
+                    key = key[0] + '-' + key[1];
+                }
+                else if (key.length == 3) {
+                    key = key[0] + key[1] + '-' + key[2];
+                }
+                //var duration = x.querySelector(".duration").innerHTML;
+                //var volume = x.querySelector(".volume").innerHTML;
+                //var note = {key: key, duration: duration, volume: volume};
+                var n = container[j];
+                n.push(key);
+                container[j] = n;
+
+            }
+        }
+    }
+
+    $.ajax({
+        url: '/edit',
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({note: container, file: filename}),
+
+        type: 'POST',
+        success: function (response) {
+            console.log(response);
+        },
+
+        error: function (error) {
+            console.log(error);
+        }
+    });
+
 
 }
 
@@ -233,17 +277,23 @@ function deleteNote(whichId) {
 }
 </script>
 
-
-<h1>Edit your music!</h1>
+<header>
+    <div class="header1">
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+      <br><br>
+    </div>
+</header>
 
 
 <body onload="REDIPS.drag.init()">
 <div id = "edit-note"></div>
 <div id = "redips-drag"> </div>
-<button onclick="playTable()">Play</button>
-<button onclick="stopPlayer()">Stop</button>
-<button onclick="">Export</button>
-
+<div class = "centerButtons">
+    <button onclick="playTable()">Play</button>
+    <button onclick="stopPlayer()">Stop</button>
+    <button onclick="saveFile()">Export</button>
+</div>
+<br>
 <div id="menu" style="visibility:hidden">
             <ul>
                 <li id="l1">Delete</li>

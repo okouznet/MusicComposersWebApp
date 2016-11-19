@@ -28,15 +28,19 @@ class PianoPlayer :
     def addTrack(self, notes, duration=None):
         mingus_notes = []
         for n in notes:
-            x = Note().from_int(n)
-            mingus_notes.append(x)
+            if isinstance(n, int) == True:
+                x = Note().from_int(n)
+                mingus_notes.append(x)
+            else:
+                x = Note(n)
+                mingus_notes.append(x)
         self.track.add_notes(mingus_notes, duration=duration)
+
 
     def playTrack(self, notes, duration=None):
         t = Track(Piano())
         for n in notes:
             t.add_notes(n, duration=duration)
-        #self.player.play_Track(t);
 
     def clearTrack(self):
         self.track = Track(Piano())
@@ -45,7 +49,6 @@ class PianoPlayer :
         t = self.track
         path = "static/library/"
         file = path + filename + ".mid"
-        #self.player.play_Track(t)
         midi_file_out.write_Track(file, t)
 
 

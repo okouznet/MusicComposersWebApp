@@ -10,27 +10,27 @@
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
     <script src="../static/midi_files/inc/shim/Base64.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
     <script src="../static/midi_files/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
 
     <!-- jasmid package -->
-    <script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
-    <script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
-    <!-- midi.js package -->
-    <script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/stream.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/midifile.js" type="text/javascript"></script>
+	<script src="../static/midi_files/inc/jasmid/replayer.js" type="text/javascript"></script>
+	<!-- midi.js package -->
+	<script src="../static/midi_files/js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/gm.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/loader.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/midi/plugin.webmidi.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/player.js" type="text/javascript"></script>
     <script src="../static/midi_files/js/midi/synesthesia.js" type="text/javascript"></script>
 
-    <!-- utils -->
-    <script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
-    <script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
+	<!-- utils -->
+	<script src="../static/midi_files/js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="../static/midi_files/js/util/dom_request_script.js" type="text/javascript"></script>
     <script src="../static/midi_files/midi_file.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.Midi.js" type="text/javascript"></script>
     <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
@@ -45,49 +45,60 @@
 
     */
     octave = 4;
-    keys = [];
-    window.onload = function () {
-        keys = {{ whitekeys|tojson }};
-        keys.push( {{ blackkeys|tojson }});
-        var all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-        document.getElementById('C').addEventListener('mousedown', function(){PlayClickedNote('C')}, false);
-        document.getElementById('C#').addEventListener('mousedown', function(){PlayClickedNote('C#')}, false);
-        document.getElementById('D').addEventListener('mousedown', function(){PlayClickedNote('D')}, false);
-        document.getElementById('D#').addEventListener('mousedown', function(){PlayClickedNote('D#')}, false);
-        document.getElementById('E').addEventListener('mousedown', function(){PlayClickedNote('E')}, false);
-        document.getElementById('F').addEventListener('mousedown', function(){PlayClickedNote('F')}, false);
-        document.getElementById('F#').addEventListener('mousedown', function(){PlayClickedNote('F#')}, false);
-        document.getElementById('G').addEventListener('mousedown', function(){PlayClickedNote('G')}, false);
-        document.getElementById('G#').addEventListener('mousedown', function(){PlayClickedNote('G#')}, false);
-        document.getElementById('A').addEventListener('mousedown', function(){PlayClickedNote('A')}, false);
-        document.getElementById('A#').addEventListener('mousedown', function(){PlayClickedNote('A#')}, false);
-        document.getElementById('B').addEventListener('mousedown', function(){PlayClickedNote('B')}, false);
-        /*
-        document.getElementById('C').addEventListener('touchstart', function(){PlayClickedNote('C')}, false);
-        document.getElementById('C#').addEventListener('touchstart', function(){PlayClickedNote('C#')}, false);
-        document.getElementById('D').addEventListener('touchstart', function(){PlayClickedNote('D')}, false);
-        document.getElementById('D#').addEventListener('touchstart', function(){PlayClickedNote('D#')}, false);
-        document.getElementById('E').addEventListener('touchstart', function(){PlayClickedNote('E')}, false);
-        document.getElementById('F').addEventListener('touchstart', function(){PlayClickedNote('F')}, false);
-        document.getElementById('F#').addEventListener('touchstart', function(){PlayClickedNote('F#')}, false);
-        document.getElementById('G').addEventListener('touchstart', function(){PlayClickedNote('G')}, false);
-        document.getElementById('G#').addEventListener('touchstart', function(){PlayClickedNote('G#')}, false);
-        document.getElementById('A').addEventListener('touchstart', function(){PlayClickedNote('A')}, false);
-        document.getElementById('A#').addEventListener('touchstart', function(){PlayClickedNote('A#')}, false);
-        document.getElementById('B').addEventListener('touchstart', function(){PlayClickedNote('B')}, false);
-        */
-        MIDI.loadPlugin({
-            soundfontUrl: "../static/midi_files/examples/soundfont/",
-            instrument: "acoustic_grand_piano",
-            onprogress: function(state, progress) {
-                console.log(state, progress);
-            },
-            onsuccess: function(evt) {
-                console.log(evt);
-            }
-        });
+    var id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
+        66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
+    var id_to_note = {0:'C', 1: 'C#', 2:"D", 3:"D#", 4:"E", 5:"F", 6:"F#",
+        7:"G", 8:"G#", 9:"A", 10:"A#", 11:"B"};
+    var note_to_modulus = { 'C':0, 'C#':1, 'D':2, 'D#':3, 'E':4, 'F':5, 'F#':6,
+            'G':7, 'G#':8, 'A':9, 'A#':10, 'B':11 };
+
+    window.onload = function () {
+
+        document.getElementById('oct').innerHTML = "Current octave: " + octave;
+
+        //add event listeners for all of the notes
+        var theParent = document.querySelector(".piano");
+        theParent.addEventListener("mousedown", clickDown, false);
+        theParent.addEventListener("mouseup", clickUp, false);
+
+	    MIDI.loadPlugin({
+		    soundfontUrl: "../static/midi_files/examples/soundfont/",
+		    instrument: "acoustic_grand_piano",
+		    onprogress: function(state, progress) {
+			    console.log(state, progress);
+		    },
+		    onsuccess: function(evt) {
+			    console.log(evt);
+		    }
+	    });
     };
+
+    function clickDown(e) {
+        if (e.target !== e.currentTarget) {
+            var id = e.target.id;
+            PlayClickedNote(id);
+            document.getElementById(id).style.background = "cornflowerblue";
+        }
+
+    e.stopPropagation();
+    }
+
+    function clickUp(e) {
+        var id = e.target.id;
+        var div = document.getElementById(id);
+            var hasClass = div.classList.contains('whitekey');
+            if (hasClass == true) {
+
+                document.getElementById(id).style.background = "white";
+            }
+            else {
+                document.getElementById(id).style.background = "black";
+            }
+
+    }
+
     function PlayNote(note) {
         var delay = 0; // play one note every quarter second
         var velocity = 127; // how hard the note hits
@@ -117,19 +128,30 @@
         play_song = 1;
         queue = {{ music|tojson }};
         queue.shift();
+        var chord = queue[0];
+        alert(chord);
+        for (var i = 0; i < chord.length; i++) {
+            var x = id_to_note[chord[i] % 12];
+            document.getElementById(x).style.background = "rosybrown";
+        }
     }
 
     function stopPlayAlong() {
         play_song = 0;
         queue = [];
+        for (var i = 0; i < all_notes.length; i++) {
+            var div = document.getElementById(all_notes[i]);
+            var hasClass = div.classList.contains('whitekey');
+            if (hasClass == true) {
+
+                document.getElementById(all_notes[i]).style.background = "white";
+            }
+            else {
+                document.getElementById(all_notes[i]).style.background = "black";
+            }
+        }
     }
 
-    var id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
-        66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
-    var id_to_note = {0:'C', 1: 'C#', 2:"D", 3:"D#", 4:"E", 5:"F", 6:"F#",
-        7:"G", 8:"G#", 9:"A", 10:"A#", 11:"B"};
-    var note_to_modulus = { 'C':0, 'C#':1, 'D':2, 'D#':3, 'E':4, 'F':5, 'F#':6,
-            'G':7, 'G#':8, 'A':9, 'A#':10, 'B':11 };
 
     function PlayClickedNote(key) {
         if (play_song == 1) {
@@ -168,7 +190,7 @@
             }
         }
         else {
-            o = octave + 1; //BUG: OCTAVE
+            o = octave; //BUG: OCTAVE
             var map = { 'C':12*o, 'C#':12*o+1, 'D':12*o+2, 'D#':12*o+3, 'E':12*o+4, 'F':12*o+5, 'F#':12*o+6,
                 'G':12*o+7, 'G#':12*o+8, 'A':12*o+9, 'A#':12*o+10, 'B':12*o+11 };
             var notes = [];
@@ -179,20 +201,24 @@
     }
 
     function playTouchedNote(evt) {
+        /*
         evt.preventDefault();
         var touches = evt.changedTouches;
         alert(touches.length);
         for (var i = 0; i < touches.length; i++) {
             alert(touches[i])
         }
+        */
     }
     var keys = {};
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
         66:7, 72:8, 78:9, 74:10, 77:11};
-    var note_map = { 90:60, 83:61, 88:62, 68:63, 67:64, 86:65,
-        71:66, 66:67, 72:68, 78:69, 74:70, 77:71 };
+
 
     document.onkeydown = function (event) {
+        var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
+            86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
+            74:12*octave+10, 77:12*octave+11 };
         if(play_song == 1) {
              var played_notes = {};
 
@@ -242,8 +268,6 @@
                 if(id_convert[i] != null) {
                     document.getElementById(id_convert[i]).style.background = "cornflowerblue";
                 }
-
-
             }
             PlayNote(notes);
         }
@@ -275,44 +299,45 @@
 </header>
 <body>
     <br><br><br>
+    <p id="oct"></p>
     <div class = "centerButtons">
-         <button>Lower Octave</button>
-         <button>Higher Octave</button>
-         <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-         <button onclick="startPlayAlong()">Play Along</button>
-        <button onclick="stopPlayAlong()">Stop Play Along</button>
-
+         <button onclick="LowOctave()">Lower Octave</button>
+         <button onclick="HighOctave()">Higher Octave</button>
     </div>
     <div class = piano>
     <ul>
         <li class = "key">
-            <span class="whitekey" id = "C"></span>
-            <span class="blackkey" id = "C#"></span>
+            <span class="whitekey" id = "C">Z</span>
+            <span class="blackkey" id = "C#">S</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "D"></span>
-            <span class="blackkey" id = "D#"></span>
+            <span class="whitekey" id = "D">X</span>
+            <span class="blackkey" id = "D#">D</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "E"></span>
+            <span class="whitekey" id = "E">C</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "F"></span>
-            <span class="blackkey" id = "F#"></span>
+            <span class="whitekey" id = "F">V</span>
+            <span class="blackkey" id = "F#">G</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "G"></span>
-            <span class="blackkey" id = "G#"></span>
+            <span class="whitekey" id = "G">B</span>
+            <span class="blackkey" id = "G#">H</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "A"></span>
-            <span class="blackkey" id = "A#"></span>
+            <span class="whitekey" id = "A">N</span>
+            <span class="blackkey" id = "A#">J</span>
         </li>
         <li class = "key">
-            <span class="whitekey" id = "B"></span>
+            <span class="whitekey" id = "B">M</span>
         </li>
 
     </ul>
+    </div>
+    <div class = "centerButtons">
+         <button onclick="startPlayAlong()">Play Along</button>
+        <button onclick="stopPlayAlong()">Stop Play Along</button>
     </div>
 
 </body>

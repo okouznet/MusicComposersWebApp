@@ -29,6 +29,7 @@ def compose():
         if (save == 1):
             filename = str(request.form["file"])
             piano.saveTrack(filename=filename)
+            piano.clearTrack()
         else:
             note = request.form.getlist('note[]')
             if len(note) > 0:
@@ -88,6 +89,19 @@ def edit():
         }
         return render_template('edit.html', **options)
     else:
+        data = request.get_json(silent=True)
+        if data is not None:
+            notes = data['note']
+            for x in notes:
+                n = []
+                for i in x:
+                    n.append(str(i))
+                piano.addTrack(notes=n)
+            filename = str(data['file'])
+            piano.saveTrack(filename=filename)
+            piano.clearTrack()
+        else:
+            note = request.form.getlist('note[]')
         dir = "static/library/"
         info = request.form
         files = []
@@ -95,7 +109,7 @@ def edit():
         x = []
         for v in info:
             files.append(request.form[v])
-            results = piano.add_file(filename=dir+v)
+            results = piano.add_file(filename=dir + v)
             data.append(results[0])
             if len(x) < len(results[1]):
                 x = results[1]
@@ -108,6 +122,27 @@ def edit():
             "colors": colors
         }
         return render_template('edit.html', **options)
+
+#save file
+@app.route('/edit/save', methods=['GET', 'POST'])
+def edit_save():
+    x = request.form.getlist("note[]")
+    print x
+    """
+    save = int(request.form["save"])
+    if(save == 1):
+        filename = str(request.form["file"])
+        #piano.saveTrack(filename=filename)
+        #piano.clearTrack()
+    else:
+        note = request.form["note[]"]
+        n = []
+        for i in note:
+            n.append(str(i))
+        print n
+        #piano.addTrack(notes=n)
+    """
+    return render_template("edit.html")
 
 #library
 @app.route('/library', methods=['GET', 'POST'])
@@ -137,4 +172,4 @@ def library():
         return render_template('library.html', **options)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

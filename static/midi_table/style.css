@@ -8,10 +8,43 @@ Oct, 2010.
 
 body{
 	font-family: arial;
+	background: black;
 	padding: 0;
     margin: 0;
 }
 
+header {
+	/*background-color: gray;*/
+    background-color: black;
+	color: white;
+	width: 100%;
+}
+
+.header {
+	text-decoration: none;
+	font-weight: bold;
+	color: white;
+	padding-top: 10px;
+	font-size: 28px;
+}
+
+.header1 {
+	color:white;
+	text-align: center;
+	padding-top: 10px;
+	width: 100%;
+}
+
+.header:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: cornflowerblue;
+}
+.table-header {
+	color: rosybrown;
+	background-color: black;
+	font-weight: bold;
+}
 /* make drag container visible */
 #redips-drag{
     width:100%;
@@ -31,7 +64,8 @@ body{
 
 /* table cells */
 div#redips-drag td{
-	border: 1px solid white;
+	cursor: pointer;
+	border: 1px solid black;
 	/*height: 50px;*/
 	text-align: center;
 	font-size: 10pt;
@@ -45,7 +79,7 @@ div#redips-drag td{
 	/*width: 87px;*/
 	/*height: 35px;*/
 	/*line-height: 35px;*/
-	border: 2px solid SteelBlue;
+	border: 2px solid cornflowerblue;
 	background-color: white;
 }
 
@@ -57,4 +91,28 @@ div#redips-drag td{
 	border-width: 1px;
 	width: 44px;
 	padding: 0px;
+}
+
+.centerButtons {
+    text-align: center;
+    /*float: center;*/
+}
+button {
+    background-color: cornflowerblue;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+#form {
+	text-align: center;
+	color: white;
+	background-color: black;
+	font-weight: bold;
 }

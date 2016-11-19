@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Play</title>
-    <link rel="stylesheet" href="../static/composeStyle.css"/>
+    <link rel="stylesheet" href="../static/playStyles.css"/>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
@@ -40,9 +40,18 @@
     octave = 4; //BUG
     var Track = [];
     var record = 0;
+    all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+    id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
+        66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
+
     window.onload = function () {
 
         document.getElementById('oct').innerHTML = "Current octave: " + octave;
+        //add event listeners for all of the notes
+        var theParent = document.querySelector(".piano");
+        theParent.addEventListener("mousedown", clickDown, false);
+        theParent.addEventListener("mouseup", clickUp, false);
 
 	    MIDI.loadPlugin({
 		    soundfontUrl: "../static/midi_files/examples/soundfont/",
@@ -55,6 +64,29 @@
             }
 	    });
     };
+    function clickDown(e) {
+        if (e.target !== e.currentTarget) {
+            var id = e.target.id;
+            PlayClickedNote(id);
+            document.getElementById(id).style.background = "cornflowerblue";
+        }
+
+    e.stopPropagation();
+    }
+
+    function clickUp(e) {
+        var id = e.target.id;
+        var div = document.getElementById(id);
+            var hasClass = div.classList.contains('whitekey');
+            if (hasClass == true) {
+
+                document.getElementById(id).style.background = "white";
+            }
+            else {
+                document.getElementById(id).style.background = "black";
+            }
+
+    }
     function PlayNote(note) {
         var delay = 0; // play one note every quarter second
         var velocity = 127; // how hard the note hits
@@ -128,20 +160,9 @@
     function PlayClickedNote(key) {
         start = +new Date();
         //90:"C-4"
-        var map = {
-            'C':12*octave, //z key - C
-            'C#':12*octave+1,//s key - C#
-            'D':12*octave+2,//x key - D
-            'D#':12*octave+3, //d key - D#
-            'E':12*octave+4,//c key - E
-            'F':12*octave+5,//v key - F
-            'F#':12*octave+6,//g key - F#
-            'G':12*octave+7,//b key - G
-            'G#':12*octave+8,//h key - G#
-            'A':12*octave+9,//n key - A
-            'A#':12*octave+10, //j key - A#
-            'B':12*octave+11//m key - B
-        };
+        o = octave; //BUG: OCTAVE
+            var map = { 'C':12*o, 'C#':12*o+1, 'D':12*o+2, 'D#':12*o+3, 'E':12*o+4, 'F':12*o+5, 'F#':12*o+6,
+                'G':12*o+7, 'G#':12*o+8, 'A':12*o+9, 'A#':12*o+10, 'B':12*o+11 };
         //save notes
         end = +new Date();
          if(record == 1) {
@@ -181,111 +202,40 @@
     document.onkeydown = function (event) {
         start = +new Date();
 
-        var note_map = {
-        //90:"C-4"
+        var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
+            86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
+            74:12*octave+10, 77:12*octave+11 };
 
-            90:12*octave, //z key - C
-            83:12*octave+1,//s key - C#
-            88:12*octave+2,//x key - D
-            68:12*octave+3, //d key - D#
-            67:12*octave+4,//c key - E
-            86:12*octave+5,//v key - F
-            71:12*octave+6,//g key - F#
-            66:12*octave+7,//b key - G
-            72:12*octave+8,//h key - G#
-            78:12*octave+9,//n key - A
-            74:12*octave+10, //j key - A#
-            77:12*octave+11//m key - B
-        };
         keys[event.which] = true;
         var notes = [];
         for (var i in keys) {
             notes.push(note_map[i]);
-            // whitekey code
-            if (i == 90)
-            {
-                $("#whitekey_C").fadeIn(100).fadeOut(100).fadeIn(100);
+            if(id_convert[i] != null) {
+                document.getElementById(id_convert[i]).style.background = "cornflowerblue";
             }
-
-            else if (i == 88)
-            {
-                $("#whitekey_D").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 67)
-            {
-                $("#whitekey_E").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 86)
-            {
-                $("#whitekey_F").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 66)
-            {
-                $("#whitekey_G").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 78)
-            {
-                $("#whitekey_A").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 77)
-            {
-                $("#whitekey_B").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            ///  NOW THE BLACK KEY CODE
-
-            else if (i == 83)
-            {
-                $("#blackkey_C").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 68)
-            {
-                $("#blackkey_D").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 71)
-            {
-                $("#blackkey_F").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 72)
-            {
-                $("#blackkey_G").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            else if (i == 74)
-            {
-                $("#blackkey_A").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-            }
-
-            //$(".blackkey").fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
         }
         PlayNote(notes);
     };
 
     document.onkeyup = function(event) {
         end = +new Date();
-        var note_map = {
-            90:12*octave,//z key - C
-            83:12*octave+1,//s key - C#
-            88:12*octave+2,//x key - D
-            68:12*octave+3, //d key - D#
-            67:12*octave+4,//c key - E
-            86:12*octave+5,//v key - F
-            71:12*octave+6,//g key - F#
-            66:12*octave+7,//b key - G
-            72:12*octave+8,//h key - G#
-            78:12*octave+9,//n key - A
-            74:12*octave+10, //j key - A#
-            77:12*octave+11//m key - B
+        var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
+            86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
+            74:12*octave+10, 77:12*octave+11 };
 
-        };
+        for (var i in keys) {
+          if(id_convert[i] != null) {
+              var div = document.getElementById(id_convert[i]);
+              var hasClass = div.classList.contains('whitekey');
+              if (hasClass == true) {
+                  document.getElementById(id_convert[i]).style.background = "white";
+              }
+              else {
+                  document.getElementById(id_convert[i]).style.background = "black";
+              }
+          }
+        }
+
         if(record == 1) {
             var temp = [];
             var mingus = [];
@@ -324,49 +274,57 @@
     <div class="header1">
       <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
     </div>
-    <div class="header2">
-        <a class="nav_link" id="LowerOctave" onclick="startRecord()">Start Record</a><br>
-        <a class="nav_link" id = "LowerOctave" onclick="stopRecord()">Stop Record</a><br>
-        <a class="nav_link" href="#" id="LowerOctave" onclick="PlayTrack()">Playback</a><br>
-        <a class="nav_link" href="#" id="LowerOctave" onclick="SaveTrack()">Save</a><br>
-        <a class="nav_link" id="HigherOctave" href="{{url_for('library')}}">Library</a><br>
-    </div>
+    <br><br>
 </header>
-<h1>Compose a piece!</h1>
 <body>
-    <p id="oct"></p>
-    <button id="lower" onclick="LowOctave()">Lower Octave</button>
-    <button id="higher" onclick="HighOctave()">Higher Octave</button>
-    <div class="container">
-        <div style="position:absolute">
-            {% for key in whitekeys %}
-            <div id="whitekey_{{ key }}" class="whitekey" onclick= "PlayClickedNote('{{ key }}')">
-            {{key}}
-            </div>
-        {% endfor %}
-        </div>
-        <div style="z-index: 2; position: relative;" >
-
-            {% for key in blackkeys %}
-                <div id="blackkey_{{ key }}" class="blackkey" onclick= "PlayClickedNote('{{ key }}')">
-                <font color="azure">{{ key }} #</font>
-                </div>
-                {% if i == key %}
-                    <div id="filler" class="filler"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
+    <p id="oct">Current octave: 4</p>
+    <div class = "centerButtons">
+         <button onclick="LowOctave()">Lower Octave</button>
+         <button onclick="HighOctave()">Higher Octave</button>
     </div>
-    <div class="after-box"></div>
-    <br>  <br>  <br>  <br>  <br>
-    <!--
-    <footer>
-        <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
-    </footer>
-    -->
+    <div class = piano>
+    <ul>
+        <li class = "key">
+            <span class="whitekey" id = "C">Z</span>
+            <span class="blackkey" id = "C#">S</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "D">X</span>
+            <span class="blackkey" id = "D#">D</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "E">C</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "F">V</span>
+            <span class="blackkey" id = "F#">G</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "G">B</span>
+            <span class="blackkey" id = "G#">H</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "A">N</span>
+            <span class="blackkey" id = "A#">J</span>
+        </li>
+        <li class = "key">
+            <span class="whitekey" id = "B">M</span>
+        </li>
+
+    </ul>
+        <br>
+    </div>
+    <div class = "centerButtons">
+        <button onclick="startRecord()">Start Record</button>
+        <button onclick="stopRecord()">Stop Record</button>
+        <button onclick="PlayTrack()">Playback</button>
+        <button onclick="SaveTrack()">Save</button>
+        <button onclick="location.href = '{{url_for('library')}}';">Library</button>
+    </div>
+
 </body>
 
-<br>  <br>  <br>  <br>  <br>
+<br>  <br>  <br>  <br>
 
 <footer>
     <p>Brought to you by Nicola, Sasha, Alden and Amit</p>
