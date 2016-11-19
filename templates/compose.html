@@ -66,18 +66,19 @@
             }
       });
     };
-    function clickDown(e) {
+   function clickDown(e) {
         if (e.target !== e.currentTarget) {
             var id = e.target.id;
             PlayClickedNote(id);
             document.getElementById(id).style.background = "cornflowerblue";
         }
-
-    e.stopPropagation();
+        e.stopPropagation();
+        e.preventDefault();
     }
 
     function clickUp(e) {
         var id = e.target.id;
+
         var div = document.getElementById(id);
             var hasClass = div.classList.contains('whitekey');
             if (hasClass == true) {
