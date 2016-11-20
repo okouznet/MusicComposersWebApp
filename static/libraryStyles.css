@@ -1,0 +1,118 @@
+html, body {
+  background: black;
+  font-family: Arial;
+  height: 100%;
+  margin: 0;
+}
+
+header {
+	/*background-color: gray;*/
+    background-color: black;
+	color: white;
+	width: 100%;
+}
+.header {
+    text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+	color: white;
+	padding-top: 10px;
+	font-size: 28px;
+}
+
+.header:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: cornflowerblue;
+}
+
+.header1 {
+	color:white;
+	text-align: center;
+	padding-top: 1%;
+	width: 100%;
+}
+
+.header3 {
+    text-decoration: none;
+    color:white;
+    background-color: black;
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.header3:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: rosybrown;
+}
+
+.selection {
+    text-align: center;
+    margin: 0 auto;
+}
+p {
+    color:white;
+    text-align: center;
+}
+
+button {
+    background-color: cornflowerblue;
+    border: none;
+    color: white;
+    padding: 5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 1px;
+    cursor: pointer;
+}
+
+footer {
+	background-color: black;
+	color: white;
+	clear: both;
+	text-align: center;
+	padding: 5px;
+	margin-top: 20px;
+	position: relative;
+	bottom:0px;
+	width: 100%;
+}
+
+#library-form {
+	/*text-align: center;*/
+	/*margin: 0 auto;*/
+}
+
+#filename {
+    background-color: rosybrown;
+    border: none;
+    color: white;
+    padding: 5px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 1px;
+    cursor: pointer;
+}
+
+#button-edit {
+    margin:10% auto;
+    display:block;
+
+    background-color: sandybrown;
+    border: none;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+#button-table {
+    text-align: center;
+	margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 10px;
+}

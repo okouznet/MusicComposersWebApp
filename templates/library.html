@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Library</title>
-    <link rel="stylesheet" href="/static/composeStyle.css"/>
+    <link rel="stylesheet" href="/static/libraryStyles.css"/>
 
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
@@ -40,6 +40,7 @@
 
     window.onload = function () {
 
+        //create table
 	    MIDI.loadPlugin({
 		    soundfontUrl: "../static/midi_files/examples/soundfont/",
 		    instrument: "acoustic_grand_piano",
@@ -52,6 +53,9 @@
 	    });
     };
 
+    function createButtonTable() {
+
+    }
     function check(){
         method = "POST";
         var act = "{{ url_for('edit') }}";
@@ -87,24 +91,33 @@
 </script>
 <header>
     <div class="header1">
-      <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
+      <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a>
+        <br>
     </div>
 </header>
-<h1>Welcome to your Music Library!</h1>
-{% for filename in library%}
-	<div>
+
+<body>
+<table id = "button-table" border="0">
+    {% for filename in library %}
+    <tr>
+     <td>
+        <div id="library-form">
 		<form method="POST" action="{{url_for('library')}}">
 			<input type="checkbox" id="{{ filename }}">
+            <button id = "filename" onclick = "">{{filename}}</button>
 			<input type="hidden" value="{{filename}}" name="filename"/>
+
 			<button type="submit" name="op" value="export">Export</button>
 			<button type="submit" name="op" value="discard">Discard</button>
-			{{filename}}
+
 		</form>
-            <button type="submit" name="op" value="play" onclick="PlayBack('{{ filename }}')"> Play Back</button>
-	</div>
-{% endfor %}
-<body>
-    <button type="submit" name="op" value="edit" onclick="check()">Edit</button>
+            <!--<button type="submit" name="op" value="play" onclick="PlayBack('{{ filename }}')"> Play Back</button> -->
+	    </div>
+    </td>
+    </tr>
+    {% endfor %}
+</table>
+    <button id = "button-edit" type="submit" name="op" value="edit" onclick="check()">Edit</button>
 
 </body>
 
