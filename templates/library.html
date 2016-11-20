@@ -93,7 +93,6 @@
 <header>
     <div class="header1">
       <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a>
-        <br>
     </div>
 </header>
 
@@ -117,8 +116,13 @@
     </td>
     </tr>
     {% endfor %}
+    <tr>
+        <td>
+            <button id = "button-edit" type="submit" name="op" value="edit" onclick="check()">Edit</button>
+
+        </td>
+    </tr>
 </table>
-    <button id = "button-edit" type="submit" name="op" value="edit" onclick="check()">Edit</button>
 
 </body>
 
