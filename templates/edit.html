@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -134,7 +135,8 @@ function makeTableHTML(myArray, color) {
     var result = "<table id='table'>";
     result += "<colgroup>";
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
-        result += "<col width='100'/>"
+        var colwidth = (90 / columns.length+1) * (i + 1);
+        result += "<col width='" + colwidth + "'/>"
     }
     result += "</colgroup>";
     result += "<tbody><tr><th></th>";
@@ -293,6 +295,8 @@ function deleteNote(whichId) {
     <button onclick="playTable()">Play</button>
     <button onclick="stopPlayer()">Stop</button>
     <button onclick="saveFile()">Export</button>
+    <button onclick="location.href = '{{url_for('library')}}';">Library</button>
+
 </div>
 <br>
 <div id="menu" style="visibility:hidden">
