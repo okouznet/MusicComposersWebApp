@@ -134,8 +134,16 @@ function makeTableHTML(myArray, color) {
     var result = "<table id='table'>";
     result += "<colgroup>";
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
-        var colwidth = 100 / columns.length;
-        result += "<col class='col-" + i + "' width='" + colwidth + "'/>"
+        if( i != 0) {
+            var colwidth = 95/ columns.length;
+            result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
+        }
+        else {
+            var colwidth = 5;
+            result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
+
+        }
+
     }
     result += "</colgroup>";
     result += "<tbody><tr><th></th>";

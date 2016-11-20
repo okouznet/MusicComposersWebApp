@@ -71,7 +71,7 @@ div#table-drag td{
 	text-align: center;
 	height: 6%;
 	font-size: 10pt;
-	padding: 2px;
+	padding: 0.5%;
 }
 
 /* drag object (DIV inside table cell) */
@@ -89,19 +89,13 @@ div#table-drag td{
 .table-drag:hover {
 }
 
-@media only screen and (max-width: 768px) {
-    /* For mobile phones: */
-    [class*="col-"] {
-        width: 100%;
-    }
-}
 /* "Load" button (needed for AJAX version) */
 .button {
-	margin: 10px;
+	margin: 2%;
 	background-color: #6A93D4;
 	color: white; 
 	border-width: 1px;
-	width: 44px;
+	width: 5%;
 	padding: 0px;
 }
 
