@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!DOCTYPE HTML>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <html lang="en">
@@ -6,10 +6,8 @@
     <meta charset="UTF-8">
     <title>Edit</title>
     <link rel="stylesheet" href="/static/midi_table/style.css"/>
-    <script src="/static/midi_table/redips-drag-min.js" type="text/javascript"></script>
-    <script src="/static/midi_table/script.js" type="text/javascript"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
-
+    <script src="../static/midi_table/script.js" type="text/javascript"></script>
     <script type='text/javascript' src='http://midijs.net/lib/midi.js'></script>
     <script src="../static/midi_files/inc/shim/Base64.js" type="text/javascript"></script>
 	<script src="../static/midi_files/inc/shim/Base64binary.js" type="text/javascript"></script>
@@ -43,6 +41,7 @@
 data = [];
 columns = [];
 notes = [];
+
 window.onload = function () {
     data = {{ data|tojson }};
     columns = {{ columns|tojson }};
@@ -55,7 +54,7 @@ window.onload = function () {
         x[i] = data[0][notes[i]];
     }
     var result = makeTableHTML(x, colors[0]);
-    $('#redips-drag').html(result);
+    $('#table-drag').html(result);
 
     for(var i = 1; i < data.length; i++) {
         var y = new Array(notes.length);
@@ -135,7 +134,7 @@ function makeTableHTML(myArray, color) {
     var result = "<table id='table'>";
     result += "<colgroup>";
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
-        var colwidth = (90 / columns.length+1) * (i + 1);
+        var colwidth = 100 / columns.length;
         result += "<col class='col-" + i + "' width='" + colwidth + "'/>"
     }
     result += "</colgroup>";
@@ -149,16 +148,18 @@ function makeTableHTML(myArray, color) {
         for(var j=0; j<columns.length; j++){
 
             var whichId = notes[i].toString() + "_" + columns[j].toString();
+            var height = 100 / notes.length;
             if(myArray[i][j]== 1) {
-                //alert(notes[i]);
-                result += "<td id = " + whichId +" onclick='editNote(\"" + whichId + "\");'>" +
-                        "<div class='redips-drag' style='border: 2px solid " +color+";'>" +
+                result += "<td id = " + whichId +" class='table-drag' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)' " +
+                        "ondragenter='dragTarget(event)' onclick='editNote(\"" + whichId + "\");'>" +
+                        "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
 
                         "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
                         "</div>" +
                         "</td>";
             } else {
-                result += "<td id = " + whichId +" onclick='editNote(\"" + whichId + "\");'>";
+                result += "<td id = " + whichId +" class='table-drag' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)'  ondragenter='dragTarget(event)'" +
+                        "onclick='editNote(\"" + whichId + "\");'></td>";
             }
         }
         result += "</tr>";
@@ -173,10 +174,13 @@ function addFile(myArray, color){
             if(myArray[i][j] == 1) {
                 var my_id = notes[i].toString() + "_" + columns[j].toString();
                 var div = document.createElement("div");
-                div.className = 'redips-drag';
+                div.className = 'table-drag';
+                var drag_id = "drag-" + my_id;
+                div.setAttribute("id", drag_id);
                 div.style.cssText = "border: 2px solid " +color+";";
                 //div.addEventListener('click', function(){editNote(id)});
                 //div.addEventListener("click", editNote, false);
+                div.setAttribute("draggable", 'true');
 
                 div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
                                 "</div><div class = 'duration'>"+128+
@@ -188,10 +192,13 @@ function addFile(myArray, color){
 }
 
 function editNote(whichId){
-
+    var x = document.getElementById(whichId);
+    var duration = x.querySelector(".duration").innerHTML;
+    var volume = x.querySelector(".volume").innerHTML;
+    var key;
     var form = "<div id = 'form'>";
-    form += "Duration: <input type='text' id='form_duration'>";
-    form += " Volume: <input type='text' id='form_volume'> ";
+    form += "Duration: <input type='text' id='form_duration' placeholder='"+duration+"'>";
+    form += " Volume: <input type='text' id='form_volume' placeholder='"+volume+"'> ";
    // alert(whichId);
     form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
     form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
@@ -270,14 +277,31 @@ function saveFile() {
 
 }
 
-// hideAll function
-function hideAll() {
-	document.getElementById('menu').style.visibility = "hidden";
-}
 // delete function
 function deleteNote(whichId) {
     document.getElementById(whichId).innerHTML = '';
 }
+
+//functions for drag and drop
+function allowDrop(e) {
+    e.preventDefault();
+}
+function drag(e) {
+    e.dataTransfer.setData("text", e.target.id);
+}
+
+function drop(e) {
+    e.preventDefault();
+    var data = e.dataTransfer.getData("text");
+    e.target.appendChild(document.getElementById(data));
+}
+
+function dragTarget(e) {
+    if (e.target.className == "redips-drag") {
+        e.target.style.border = "3px rosybrown";
+    }
+}
+
 </script>
 
 <header>
@@ -288,9 +312,9 @@ function deleteNote(whichId) {
 </header>
 
 
-<body onload="REDIPS.drag.init()">
+<body>
 <div id = "edit-note"></div>
-<div id = "redips-drag"> </div>
+<div id = "table-drag"> </div>
 <div class = "centerButtons">
     <button onclick="playTable()">Play</button>
     <button onclick="stopPlayer()">Stop</button>
