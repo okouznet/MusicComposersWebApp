@@ -212,14 +212,25 @@
             74:12*octave+10, 77:12*octave+11 };
 
         keys[event.which] = true;
-        var notes = [];
-        for (var i in keys) {
+
+        if (87 in keys) {
+            LowOctave();
+            delete keys[87];
+        }
+        else if (82 in keys) {
+            HighOctave();
+            delete keys[82];
+        }
+        else {
+            var notes = [];
+            for (var i in keys) {
             notes.push(note_map[i]);
             if(id_convert[i] != null) {
                 document.getElementById(id_convert[i]).style.background = "cornflowerblue";
             }
+            }
+            PlayNote(notes);
         }
-        PlayNote(notes);
     };
 
     document.onkeyup = function(event) {
@@ -284,8 +295,8 @@
 <body>
     <p id="oct">Current octave: 4</p>
     <div class = "centerButtons">
-         <button onclick="LowOctave()">Lower Octave</button>
-         <button onclick="HighOctave()">Higher Octave</button>
+         <button onclick="LowOctave()">Lower Octave (w)</button>
+         <button onclick="HighOctave()">Higher Octave (r)</button>
     </div>
     <div class = piano>
     <ul>
