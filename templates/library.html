@@ -1,6 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <html lang="en">
 
 <head>
@@ -42,7 +40,6 @@
 
     window.onload = function () {
 
-        //create table
 	    MIDI.loadPlugin({
 		    soundfontUrl: "../static/midi_files/examples/soundfont/",
 		    instrument: "acoustic_grand_piano",
@@ -55,9 +52,6 @@
 	    });
     };
 
-    function createButtonTable() {
-
-    }
     function check(){
         method = "POST";
         var act = "{{ url_for('edit') }}";
@@ -102,7 +96,7 @@
 <table id = "button-table" border="0">
     {% for filename in library %}
     <tr>
-     <td>
+     <td width="(100/4)%">>
         <div id="library-form">
 		<form method="POST" action="{{url_for('library')}}">
 			<input type="checkbox" id="{{ filename }}">

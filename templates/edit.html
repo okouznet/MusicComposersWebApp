@@ -88,7 +88,6 @@ function playTable() {
         container[i] = [];
     }
     for (var i = 0; i < notes.length; i++) {
-        var pause = 1;
         for(var j = 0; j < columns.length; j++){
             var whichId = notes[i].toString() + "_" + columns[j].toString();
 
@@ -109,6 +108,20 @@ function playTable() {
     }
 
     //MIDI.setVolume(0, 100,0);
+
+    for(var i = 0; i < container.length; i++) {
+        if(container[i] == '') {
+            //alert("silent");
+
+            var k = 'C3';
+            var d = 128;
+            var v = 1;
+            var note = {key: k, duration: d, volume: v};
+            var n = [];
+            n.push(note);
+            container[i] = n;
+        }
+    }
     container = container.filter(function(n){ return n != '' });
 
     var noteEvents = [];
@@ -265,7 +278,7 @@ function saveFile() {
             }
         }
     }
-
+    //code to send song back to library
     $.ajax({
         url: '/edit',
         dataType : "json",

@@ -38,14 +38,7 @@
     <script src="../static/midi_files/JZZ.MidiFile.js" type="text/javascript"></script>
 </head>
 <script type="text/javascript">
-    //create midi file
-    /*
-    mf = new JZZ_.MidiFile(1,100);
-    //MIDI file tracks
-    var tr0 = new JZZ_.MidiFile.MTrk; mf.push(tr0); // First track in Type 1 MIDI file is normally used for tempo changes
-    var tr1 = new JZZ_.MidiFile.MTrk; mf.push(tr1); // This one will be for the music
 
-    */
     octave = 4;
     all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -204,16 +197,6 @@
         }
     }
 
-    function playTouchedNote(evt) {
-        /*
-        evt.preventDefault();
-        var touches = evt.changedTouches;
-        alert(touches.length);
-        for (var i = 0; i < touches.length; i++) {
-            alert(touches[i])
-        }
-        */
-    }
     var keys = {};
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
         66:7, 72:8, 78:9, 74:10, 77:11};
