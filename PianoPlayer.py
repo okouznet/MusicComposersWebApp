@@ -1,4 +1,3 @@
-import wave
 from mingus.containers import NoteContainer
 from mingus.containers import Note
 from mingus.containers import Track
@@ -6,19 +5,14 @@ from mingus.containers import Composition
 from mingus.containers.instrument import Piano
 from mingus.midi import midi_file_out
 from mingus.midi import midi_file_in
-import math
 
-#keys = ["'C-4'", "'C#-4'", "'D-4'", "'D#-4'", "'E-4'", "'F-4'", "'F#-4'", "'G-4'", "'G#-4'", "'A-4'", "'A#-4'", "'B-4'"]
 class PianoPlayer :
-    #sound_file = "static/soundfront.SF2"
-
     def __init__(self):
         self.track = Track(Piano())
-        #self.player = fluidsynth
-        #self.player.init(self.sound_file)
+
         self.notes = []
         #initialize keys
-        for i in range(48, 60):
+        for i in range(21, 109):
             self.notes.append(i)
         self.matrix = {}
         for n in self.notes:
@@ -69,7 +63,6 @@ class PianoPlayer :
 
     def add_file(self, filename):
         file = midi_file_in.MIDI_to_Composition(filename)
-        #composition = self.buildComposition(file[0])
 
         #get total count
         count = []

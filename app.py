@@ -2,12 +2,10 @@ from flask import *
 import PianoPlayer
 import os
 
-#import numpy as np
-
 app = Flask(__name__)
 
 piano = PianoPlayer.PianoPlayer()
-colors = ["Teal","MediumSeaGreen", "Maroon" ]
+colors = ["Teal", "MediumSeaGreen", "Maroon", "Chocolate", "SandyBrown", "Gold", "OliveDrab"]
 
 #home page
 @app.route('/')
@@ -123,27 +121,6 @@ def edit():
         }
         return render_template('edit.html', **options)
 
-#save file
-@app.route('/edit/save', methods=['GET', 'POST'])
-def edit_save():
-    x = request.form.getlist("note[]")
-    print x
-    """
-    save = int(request.form["save"])
-    if(save == 1):
-        filename = str(request.form["file"])
-        #piano.saveTrack(filename=filename)
-        #piano.clearTrack()
-    else:
-        note = request.form["note[]"]
-        n = []
-        for i in note:
-            n.append(str(i))
-        print n
-        #piano.addTrack(notes=n)
-    """
-    return render_template("edit.html")
-
 #library
 @app.route('/library', methods=['GET', 'POST'])
 def library():
@@ -163,7 +140,6 @@ def library():
         else:
             abort(404)
 
-
     else:
         library = os.listdir(dir_name)
         options = {
@@ -172,4 +148,4 @@ def library():
         return render_template('library.html', **options)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

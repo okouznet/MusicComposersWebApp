@@ -42,14 +42,10 @@
     octave = 4; //BUG
     var Track = [];
     var record = 0;
-    all_notes = ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    all_notes = ["C","Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
-    id_convert = {90:'C', 83:'C#', 88:'D', 68:'D#', 67:'E', 86:'F', 71:'F#',
-        66:'G', 72:'G#', 78:'A', 74:'A#', 77:'B'};
-
-    key_to_noteid= { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
-        86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
-        74:12*octave+10, 77:12*octave+11 };
+    id_convert = {90:'C', 83:'Db', 88:'D', 68:'Eb', 67:'E', 86:'F', 71:'Gb',
+        66:'G', 72:'Ab', 78:'A', 74:'Bb', 77:'B'};
 
     window.onload = function () {
 
@@ -168,16 +164,19 @@
 
     function PlayClickedNote(key) {
         start = +new Date();
-
+        //90:"C-4"
+        o = octave; //BUG: OCTAVE
+            var map = { 'C':12*o, 'Db':12*o+1, 'D':12*o+2, 'Eb':12*o+3, 'E':12*o+4, 'F':12*o+5, 'Gb':12*o+6,
+                'G':12*o+7, 'Ab':12*o+8, 'A':12*o+9, 'Bb':12*o+10, 'B':12*o+11 };
         //save notes
         end = +new Date();
          if(record == 1) {
             var temp = [];
             var mingus = [];
             var n = {key: key + octave.toString(), duration: end - start, volume: 90};
-            var x = key + octave.toString();
+            // alert(key+octave.toString());
             temp.push(n);
-            mingus.push(key_to_noteid[key]); //BUG - check how file is saved!
+            mingus.push(map[key]); //BUG - check how file is saved!
             //handle empty array
             if(temp.length > 0) {
                 Track.push(temp);
@@ -208,10 +207,14 @@
     document.onkeydown = function (event) {
         start = +new Date();
 
+        var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
+            86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
+            74:12*octave+10, 77:12*octave+11 };
+
         keys[event.which] = true;
         var notes = [];
         for (var i in keys) {
-            notes.push(key_to_noteid[i]);
+            notes.push(note_map[i]);
             if(id_convert[i] != null) {
                 document.getElementById(id_convert[i]).style.background = "cornflowerblue";
             }
@@ -221,6 +224,9 @@
 
     document.onkeyup = function(event) {
         end = +new Date();
+        var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
+            86:12*octave+5, 71:12*octave+6, 66:12*octave+7, 72:12*octave+8, 78:12*octave+9,
+            74:12*octave+10, 77:12*octave+11 };
 
         for (var i in keys) {
           if(id_convert[i] != null) {
@@ -239,9 +245,9 @@
             var temp = [];
             var mingus = [];
             for (var i in keys) {
-                var n = {key: MIDI.noteToKey[key_to_noteid[i]], duration: end - start, volume: 90};
+                var n = {key: MIDI.noteToKey[note_map[i]], duration: end - start, volume: 90};
                 temp.push(n);
-                mingus.push(key_to_noteid[i]);
+                mingus.push(note_map[i]);
                 delete keys[i];
             }
             //handle empty array
@@ -285,26 +291,26 @@
     <ul>
         <li class = "key">
             <span class="whitekey" id = "C">Z</span>
-            <span class="blackkey" id = "C#">S</span>
+            <span class="blackkey" id = "Db">S</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "D">X</span>
-            <span class="blackkey" id = "D#">D</span>
+            <span class="blackkey" id = "Eb">D</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "E">C</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "F">V</span>
-            <span class="blackkey" id = "F#">G</span>
+            <span class="blackkey" id = "Gb">G</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "G">B</span>
-            <span class="blackkey" id = "G#">H</span>
+            <span class="blackkey" id = "Ab">H</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "A">N</span>
-            <span class="blackkey" id = "A#">J</span>
+            <span class="blackkey" id = "Bb">J</span>
         </li>
         <li class = "key">
             <span class="whitekey" id = "B">M</span>
