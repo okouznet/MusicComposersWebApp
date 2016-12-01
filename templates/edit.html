@@ -40,28 +40,42 @@
 data = [];
 columns = [];
 notes = [];
+colors = [];
 
 window.onload = function () {
     data = {{ data|tojson }};
     columns = {{ columns|tojson }};
-    var colors = {{ colors|tojson }};
+    colors = {{ colors|tojson }};
     notes = {{ notes|tojson }};
-    var x = new Array(notes.length);
-    //initialize Array
-
-    for (var i = 0; i < x.length; i++) {
-        x[i] = data[0][notes[i]];
-    }
-    var result = makeTableHTML(x, colors[0]);
-    $('#table-drag').html(result);
-
-    for(var i = 1; i < data.length; i++) {
-        var y = new Array(notes.length);
-
-        for(var j = 0; j < y.length; j++) {
-            y[j] = data[i][notes[j]];
+    if(data.length > 0) {
+        var x = new Array(notes.length);
+        //initialize Array
+        for (var i = 0; i < x.length; i++) {
+            x[i] = data[0][notes[i]];
         }
-        addFile(y, colors[i]);
+        var result = makeTableHTML(x, colors[0]);
+        $('#table-drag').html(result);
+
+        for(var i = 1; i < data.length; i++) {
+            var y = new Array(notes.length);
+
+            for(var j = 0; j < y.length; j++) {
+                y[j] = data[i][notes[j]];
+            }
+            addFile(y, colors[i]);
+        }
+    }
+    else {
+        for (var i = 0; i < 12; i++) {
+            columns.push(i * (1/4))
+        }
+        var x = new Array(notes.length);
+        //initialize Array
+        for (var i = 0; i < x.length; i++) {
+            x[i] = [];
+        }
+        var empty_table = makeTableHTML(x, "DarkSlateBlue");
+        $('#table-drag').html(empty_table);
     }
 
 
@@ -88,7 +102,7 @@ function playTable() {
     }
     for (var i = 0; i < notes.length; i++) {
         for(var j = 0; j < columns.length; j++){
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
+            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
 
 
             var x = document.getElementById(whichId);
@@ -160,14 +174,19 @@ function makeTableHTML(myArray, color) {
     result += "</colgroup>";
     result += "<tbody><tr><th></th>";
     for (var i = 0; i < columns.length; i++) {
-        result += "<th class = 'table-header'>"+ columns[i]+"</th>";
+        if((columns[i] % 1) != 0) {
+            result += "<th class = 'table-header-inv'>"+ Math.floor(columns[i])+"</th>";
+        }
+        else {
+            result += "<th class = 'table-header'>"+ Math.floor(columns[i])+"</th>";
+        }
+
     }
     result += "</tr>";
     for(var i=0; i<myArray.length; i++) {
         result += "<td class = 'table-header'>" + MIDI.noteToKey[notes[i]] + "</td>";
         for(var j=0; j<columns.length; j++){
-
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
+            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
             var height = 100 / notes.length;
             if(myArray[i][j]== 1) {
                 result += "<td id = " + whichId +" class='table-drag' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)' " +
@@ -192,7 +211,7 @@ function addFile(myArray, color){
     for (var i = 0; i < myArray.length; i++) {
         for (var j = 0; j < myArray[i].length; j++) {
             if(myArray[i][j] == 1) {
-                var my_id = notes[i].toString() + "_" + columns[j].toString();
+                var my_id = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
                 var div = document.createElement("div");
                 div.className = 'table-drag';
                 var drag_id = "drag-" + my_id;
@@ -213,15 +232,23 @@ function addFile(myArray, color){
 
 function editNote(whichId){
     var x = document.getElementById(whichId);
-    var duration = x.querySelector(".duration").innerHTML;
-    var volume = x.querySelector(".volume").innerHTML;
-    var key;
+    var key = whichId.split('_')[0];
+    var duration = 128;
+    var volume = 90;
+    if (x.innerHTML != '') {
+        duration = x.querySelector(".duration").innerHTML;
+        volume = x.querySelector(".volume").innerHTML;
+        key = x.querySelector(".key").innerHTML;
+    }
+
     var form = "<div id = 'form'>";
+    form += " Note: <input type='text' id='form_key' placeholder='"+key+"'> ";
     form += "Duration: <input type='text' id='form_duration' placeholder='"+duration+"'>";
     form += " Volume: <input type='text' id='form_volume' placeholder='"+volume+"'> ";
    // alert(whichId);
     form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
     form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
+    form += "<button onclick='addNote(\"" + whichId + "\")'>" + "Add" + "</button>";
     form += "</div>";
 
     $('#edit-note').html(form);
@@ -255,7 +282,7 @@ function saveFile() {
         //var cells = table.rows.item(i).cells;
         var pause = 1;
         for(var j = 0; j < columns.length; j++){
-            var whichId = notes[i].toString() + "_" + columns[j].toString();
+            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
 
 
             var x = document.getElementById(whichId);
@@ -302,6 +329,27 @@ function deleteNote(whichId) {
     document.getElementById(whichId).innerHTML = '';
 }
 
+//function to add note
+function addNote(whichId) {
+    var duration = document.getElementById("form_duration").value;
+    if (duration == '') {
+        duration = 128;
+    }
+    var volume = document.getElementById("form_volume").value;
+    if (volume == '') {
+        volume = 90;
+    }
+    var note = document.getElementById("form_key").value;
+    if (note != '') {
+         //update note in table
+        color = "DarkSlateBlue";
+        var result = "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
+                     "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>" +
+                     "</div>";
+        var id = note + '_' + (whichId.split("_"))[1];
+        document.getElementById(id).innerHTML = result;
+    }
+}
 //functions for drag and drop
 function allowDrop(e) {
     e.preventDefault();
@@ -322,6 +370,38 @@ function dragTarget(e) {
     }
 }
 
+function updateTimeMeasure() {
+    var num_beats = columns.length;
+    var measure = (document.getElementById("time_measure").value).split("/");
+    if (measure != '') {
+         var numerator = measure[0];
+        var denominator = measure[1];
+
+        var new_columns = [];
+        for (var i = 0; i < num_beats; i++) {
+            x = (i * (1/numerator)).toFixed(2);
+            new_columns.push(x)
+        }
+        columns = new_columns;
+        var x = new Array(notes.length);
+        //initialize Array
+        for (var i = 0; i < x.length; i++) {
+            x[i] = data[0][notes[i]];
+        }
+        var result = makeTableHTML(x, colors[0]);
+        $('#table-drag').html(result);
+
+        for(var i = 1; i < data.length; i++) {
+            var y = new Array(notes.length);
+
+            for(var j = 0; j < y.length; j++) {
+                y[j] = data[i][notes[j]];
+            }
+            addFile(y, colors[i]);
+        }
+    }
+
+}
 </script>
 
 <header>
@@ -333,6 +413,10 @@ function dragTarget(e) {
 
 
 <body>
+<div id = "form">
+    Time Measure: <input type='text' id='time_measure' placeholder='4/4'>
+    <button onclick="updateTimeMeasure()">Update</button>
+</div>
 <div id = "edit-note"></div>
 <div id = "table-drag"> </div>
 <div class = "centerButtons">

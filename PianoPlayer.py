@@ -101,13 +101,18 @@ class PianoPlayer :
 
     def make_queue(self, filename):
         file = midi_file_in.MIDI_to_Composition(filename)
+
         composition = self.buildComposition(file[0])
         result = []
         for track in composition[0]:
+
             for bar in track:
                 for notes in bar:
                     temp = []
                     for n in notes[2]:
                         temp.append(int(n))
-                    result.append(temp)
+                    print notes
+                    if len(notes[2]) > 0:
+                        result.append(temp)
         return result
+

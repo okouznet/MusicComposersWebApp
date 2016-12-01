@@ -40,6 +40,12 @@ header {
 	font-weight: bold;
 	color: cornflowerblue;
 }
+
+.table-header-inv {
+	color: black;
+	background-color: black;
+	font-weight: bold;
+}
 .table-header {
 	color: rosybrown;
 	background-color: black;

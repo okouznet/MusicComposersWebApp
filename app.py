@@ -50,7 +50,8 @@ def compose():
 #play page
 @app.route('/play', methods=['GET','POST'])
 def play():
-    music = piano.make_queue(filename="static/library/grieg_waltz.mid")
+    #music = piano.make_queue(filename="/Users/alefevre/Documents/UndergraduateCourses/EECS481/MusicComposersWebApp/static/playback/for_elise_by_beethoven.mid")
+    music = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
     print music
     if request.method == 'POST':
         return render_template('play.html')
@@ -96,10 +97,9 @@ def edit():
                     n.append(str(i))
                 piano.addTrack(notes=n)
             filename = str(data['file'])
+            print filename
             piano.saveTrack(filename=filename)
             piano.clearTrack()
-        else:
-            note = request.form.getlist('note[]')
         dir = "static/library/"
         info = request.form
         files = []
@@ -108,6 +108,7 @@ def edit():
         for v in info:
             files.append(request.form[v])
             results = piano.add_file(filename=dir + v)
+            print request.form[v]
             data.append(results[0])
             if len(x) < len(results[1]):
                 x = results[1]
@@ -119,6 +120,7 @@ def edit():
             "files": files,
             "colors": colors
         }
+
         return render_template('edit.html', **options)
 
 #library
@@ -148,4 +150,4 @@ def library():
         return render_template('library.html', **options)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
