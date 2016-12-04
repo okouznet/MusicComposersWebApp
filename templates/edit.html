@@ -255,17 +255,6 @@ function editNote(whichId){
 
 }
 
-function updateNote(whichId) {
-
-    var duration = document.getElementById("form_duration").value;
-    var volume = document.getElementById("form_volume").value;
-
-    //update note in table
-    document.getElementById(whichId).querySelector(".duration").innerHTML = duration;
-    document.getElementById(whichId).querySelector(".volume").innerHTML = volume;
-
-}
-
 function saveFile() {
     var filename = prompt("Please enter file name", "file name");
 
@@ -329,6 +318,21 @@ function deleteNote(whichId) {
     document.getElementById(whichId).innerHTML = '';
 }
 
+function updateNote(whichId) {
+
+    var duration = document.getElementById("form_duration").value;
+    var volume = document.getElementById("form_volume").value;
+    if (duration == '') {
+        duration = 128;
+    }
+    if (volume == '') {
+        volume = 90;
+    }
+    //update note in table
+    document.getElementById(whichId).querySelector(".duration").innerHTML = duration;
+    document.getElementById(whichId).querySelector(".volume").innerHTML = volume;
+
+}
 //function to add note
 function addNote(whichId) {
     var duration = document.getElementById("form_duration").value;

@@ -152,7 +152,7 @@
 
    function HighOctave() {
        //BUG: sometimes if JS lags, doesn't change octave right away
-       if(octave <= 7){
+       if(octave <= 6){
            octave = octave +1;
        }
        document.getElementById('oct').innerHTML = "Current octave: " + octave;
@@ -173,12 +173,15 @@
          if(record == 1) {
             var temp = [];
             var mingus = [];
-            var n = {key: key + octave.toString(), duration: end - start, volume: 90};
+            var n = {key: key + (octave-1).toString(), duration: end - start, volume: 90};
             // alert(key+octave.toString());
             temp.push(n);
             mingus.push(map[key]); //BUG - check how file is saved!
             //handle empty array
             if(temp.length > 0) {
+                if (Track.length == 0){
+                    Track.push(temp);
+                }
                 Track.push(temp);
             }
             $.ajax({
@@ -263,6 +266,9 @@
             }
             //handle empty array
             if(temp.length > 0) {
+                if (Track.length == 0) {
+                    Track.push(temp)
+                }
                 Track.push(temp);
             }
             $.ajax({

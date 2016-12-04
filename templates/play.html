@@ -123,6 +123,8 @@
     queue = [];
     play_song = 0;
     function startPlayAlong() {
+        //reset play along
+        stopPlayAlong();
         play_song = 1;
         queue = {{ music|tojson }};
         queue.shift();
