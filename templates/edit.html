@@ -353,10 +353,6 @@ function addNote(whichId) {
         document.getElementById(id).innerHTML = result;
     }
 }
-//functions for drag and drop
-function allowDrop(e) {
-    e.preventDefault();
-}
 
 var start_id = '';
 var end_id = '';
@@ -368,7 +364,6 @@ function clickAndDrop(e) {
         if( t) {
 
             start_id = (t.id).split('-')[1];
-            alert(start_id);
             if (document.getElementById(start_id).innerHTML == "") {
                 start_id = '';
             }
