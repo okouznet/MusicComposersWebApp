@@ -189,16 +189,16 @@ function makeTableHTML(myArray, color) {
             var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
             var height = 100 / notes.length;
             if(myArray[i][j]== 1) {
-                result += "<td id = " + whichId +" class='table-drag' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)' " +
-                        "ondragenter='dragTarget(event)' onclick='editNote(\"" + whichId + "\");'>" +
+                result += "<td id = " + whichId +" class='table-drag' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\");'>" +
                         "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
 
                         "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
                         "</div>" +
                         "</td>";
             } else {
-                result += "<td id = " + whichId +" class='table-drag' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)'  ondragenter='dragTarget(event)'" +
-                        "onclick='editNote(\"" + whichId + "\");'></td>";
+                result += "<td id = " + whichId +" class='table-drag' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\");'></td>";
             }
         }
         result += "</tr>";
@@ -217,8 +217,7 @@ function addFile(myArray, color){
                 var drag_id = "drag-" + my_id;
                 div.setAttribute("id", drag_id);
                 div.style.cssText = "border: 2px solid " +color+";";
-                //div.addEventListener('click', function(){editNote(id)});
-                //div.addEventListener("click", editNote, false);
+
                 div.setAttribute("draggable", 'true');
 
                 div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
@@ -358,19 +357,37 @@ function addNote(whichId) {
 function allowDrop(e) {
     e.preventDefault();
 }
-function drag(e) {
-    e.dataTransfer.setData("text", e.target.id);
-}
 
-function drop(e) {
-    e.preventDefault();
-    var data = e.dataTransfer.getData("text");
-    e.target.appendChild(document.getElementById(data));
-}
+var start_id = '';
+var end_id = '';
+var tmp_div;
+function clickAndDrop(e) {
+    if ((end_id == '') && (start_id == '')) {
+        var t = e.target;
+        while(t && !t.id) t = t.parentNode;
+        if( t) {
 
-function dragTarget(e) {
-    if (e.target.className == "redips-drag") {
-        e.target.style.border = "3px rosybrown";
+            start_id = (t.id).split('-')[1];
+            alert(start_id);
+            if (document.getElementById(start_id).innerHTML == "") {
+                start_id = '';
+            }
+            else {
+                tmp_div = document.getElementById(t.id);
+            }
+        }
+    }
+    else if (start_id != '') {
+        e.preventDefault();
+        //reset ids
+        if(start_id != '') {
+            end_id = e.target.id;
+            tmp_div.setAttribute("id", "drag-"+end_id);
+            document.getElementById(end_id).innerHTML = document.getElementById(start_id).innerHTML;
+            deleteNote(start_id);
+        }
+        start_id = '';
+        end_id = '';
     }
 }
 
