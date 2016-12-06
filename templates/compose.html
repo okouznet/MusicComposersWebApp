@@ -111,9 +111,6 @@
         // Creates an object that contains the final MIDI track in base64
         var song  = MidiWriter({ tracks: [track] });
 
-        //reset Track
-        Track.length = 0;
-
         // Play the song
         var file = "data:audio/midi;base64," + song.b64;
         MIDI.Player.loadFile(file, MIDI.Player.start);
@@ -135,11 +132,17 @@
                  }
         });
     }
+
+    function DiscardTrack() {
+        //reset Track
+        Track.length = 0;
+    }
     function startRecord() {
         record = 1
     }
     function stopRecord() {
         record = 0;
+        Track.length = 0;
     }
 
     function LowOctave() {
@@ -340,7 +343,9 @@
         <button onclick="startRecord()">Start Record</button>
         <button onclick="stopRecord()">Stop Record</button>
         <button onclick="PlayTrack()">Playback</button>
+        <button onclick="DiscardTrack()">Discard</button>
         <button onclick="SaveTrack()">Save</button>
+
         <button onclick="location.href = '{{url_for('library')}}';">Library</button>
     </div>
 
