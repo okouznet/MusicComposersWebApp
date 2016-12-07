@@ -343,15 +343,18 @@ function addNote(whichId) {
         volume = 90;
     }
     var note = document.getElementById("form_key").value;
-    if (note != '') {
-         //update note in table
-        color = "DarkSlateBlue";
-        var result = "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
-                     "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>" +
-                     "</div>";
-        var id = note + '_' + (whichId.split("_"))[1];
-        document.getElementById(id).innerHTML = result;
+    if (note == '') {
+        note = whichId.split('_')[0];
     }
+
+    //update note in table
+    color = "DarkSlateBlue";
+    var result = "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
+        "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>" +
+        "</div>";
+    var id = note + '_' + (whichId.split("_"))[1];
+    document.getElementById(id).innerHTML = result;
+
 }
 
 var start_id = '';
@@ -364,7 +367,7 @@ function clickAndDrop(e) {
         if( t) {
 
             start_id = (t.id).split('-')[1];
-            if (document.getElementById(start_id).innerHTML == "") {
+            if (start_id == null) {
                 start_id = '';
             }
             else {
