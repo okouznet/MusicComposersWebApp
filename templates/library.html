@@ -84,6 +84,15 @@
         player.loadFile(file, player.start);
         player.start();
     }
+
+    function checkBox(checkboxId){
+        if(document.getElementById(checkboxId).checked){
+            document.getElementById(checkboxId).checked = false;
+        }
+        else{
+            document.getElementById(checkboxId).checked = true;
+        }
+    }
 </script>
 <header>
     <div class="header1">
@@ -100,7 +109,7 @@
         <div id="library-form">
 		<form method="POST" action="{{url_for('library')}}">
 			<input type="checkbox" id="{{ filename }}">
-            <button id = "filename" onclick = "">{{filename}}</button>
+            <button type = "button"id = "filename" onclick = "checkBox('{{filename}}')">{{filename}}</button>
 			<input type="hidden" value="{{filename}}" name="filename"/>
 
 			<button type="submit" name="op" value="export">Export</button>
