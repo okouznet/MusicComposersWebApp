@@ -72,9 +72,15 @@ class PianoPlayer :
                 if(info[0] == 0):
                     i = i + 1
                 count.append(info[0] + i)
-        matrix = self.midi_matrix(track=file[0][0], total_count=len(count))
+                print info[0] + i
+        #normalize count array
+        count_total = []
+        for i in range(0, len(count)*4):
+            count_total.append(0.0625 * i)
+        print count_total
+        matrix = self.midi_matrix(track=file[0][0], total_count=len(count_total))
         count.pop()
-        return (matrix, count)
+        return (matrix, count_total)
 
 
     def midi_matrix(self, track, total_count=6):
@@ -88,9 +94,11 @@ class PianoPlayer :
                 for n in info[2]:
                     i = int(n)
                     x = matrix[i]
-                    x[count] = 1
+
+                    x[count*4] = 1
                     matrix[i] = x
                 count = count + 1
+        print matrix
         return matrix
 
     def getMatrix(self):
@@ -116,3 +124,6 @@ class PianoPlayer :
                         result.append(temp)
         return result
 
+if __name__ == "__main__":
+    p = PianoPlayer()
+    p.add_file(filename="/Users/alefevre/Documents/Courses/EECS481/MusicComposersWebApp/static/library/part1.mid")

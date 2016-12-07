@@ -47,6 +47,8 @@ window.onload = function () {
     columns = {{ columns|tojson }};
     colors = {{ colors|tojson }};
     notes = {{ notes|tojson }};
+
+    alert(columns);
     if(data.length > 0) {
         var x = new Array(notes.length);
         //initialize Array
@@ -161,7 +163,7 @@ function makeTableHTML(myArray, color) {
     result += "<colgroup>";
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
         if( i != 0) {
-            var colwidth = 95/ columns.length;
+            var colwidth = 95/ (columns.length);
             result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
         }
         else {
@@ -185,20 +187,29 @@ function makeTableHTML(myArray, color) {
     result += "</tr>";
     for(var i=0; i<myArray.length; i++) {
         result += "<td class = 'table-header'>" + MIDI.noteToKey[notes[i]] + "</td>";
+
         for(var j=0; j<columns.length; j++){
             var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
             var height = 100 / notes.length;
             if(myArray[i][j]== 1) {
-                result += "<td id = " + whichId +" class='table-drag' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\");'>" +
-                        "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
-
-                        "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+ "</div><div class = 'duration'>"+128+"</div><div class = 'volume'>"+90+"</div>"+
-                        "</div>" +
+                result += "<td id = " + whichId +" class='table-drag' colspan=4 style='border: 3px solid " +color+";' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\")'>" +
+                            "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
+                            "</div><div class = 'duration'>"+128+
+                            "</div><div class = 'volume'>"+90+"</div>" +
                         "</td>";
+                //remove zeros due to colspan
+                myArray[i].splice(j,3);
+                //remove rows due to colspan
+                for (var rem = 0; i < 3; i++) {
+
+                }
+
             } else {
-                result += "<td id = " + whichId +" class='table-drag' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\");'></td>";
+
+                result += "<td id = " + whichId +" class='table-drag' style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
+
             }
         }
         result += "</tr>";
@@ -212,24 +223,20 @@ function addFile(myArray, color){
         for (var j = 0; j < myArray[i].length; j++) {
             if(myArray[i][j] == 1) {
                 var my_id = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-                var div = document.createElement("div");
-                div.className = 'table-drag';
-                var drag_id = "drag-" + my_id;
-                div.setAttribute("id", drag_id);
-                div.style.cssText = "border: 2px solid " +color+";";
+                document.getElementById(my_id).style.cssText = "border: 3px solid " +color+";";
 
-                div.setAttribute("draggable", 'true');
-
-                div.innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
+                document.getElementById(my_id).innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
                                 "</div><div class = 'duration'>"+128+
                                 "</div><div class = 'volume'>"+90+"</div>";
-                document.getElementById(my_id).appendChild(div);
+
             }
         }
     }
 }
 
 function editNote(whichId){
+    start_id = '';
+    end_id = '';
     var x = document.getElementById(whichId);
     var key = whichId.split('_')[0];
     var duration = 128;
@@ -315,6 +322,7 @@ function saveFile() {
 // delete function
 function deleteNote(whichId) {
     document.getElementById(whichId).innerHTML = '';
+    document.getElementById(whichId).style.cssText = '';
 }
 
 function updateNote(whichId) {
@@ -349,11 +357,12 @@ function addNote(whichId) {
 
     //update note in table
     color = "DarkSlateBlue";
-    var result = "<div id = 'drag-" + whichId + "' class='table-drag' draggable ='true' style='border: 2px solid "+color+";'>" +
-        "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>" +
-        "</div>";
+    var result = "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>";
+
     var id = note + '_' + (whichId.split("_"))[1];
     document.getElementById(id).innerHTML = result;
+    document.getElementById(id).style.cssText = "border: 3px solid " +color+";";
+
 
 }
 
@@ -366,7 +375,7 @@ function clickAndDrop(e) {
         while(t && !t.id) t = t.parentNode;
         if( t) {
 
-            start_id = (t.id).split('-')[1];
+            start_id = (t.id);
             if (start_id == null) {
                 start_id = '';
             }
@@ -380,8 +389,9 @@ function clickAndDrop(e) {
         //reset ids
         if(start_id != '') {
             end_id = e.target.id;
-            tmp_div.setAttribute("id", "drag-"+end_id);
             document.getElementById(end_id).innerHTML = document.getElementById(start_id).innerHTML;
+            document.getElementById(end_id).style.cssText = document.getElementById(start_id).style.cssText;
+
             deleteNote(start_id);
         }
         start_id = '';
