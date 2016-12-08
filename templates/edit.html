@@ -64,8 +64,10 @@ window.onload = function () {
             for(var j = 0; j < y.length; j++) {
                 y[j] = data[i][notes[j]];
             }
-            addFile(y, colors[i]);
-            merge(colors[i], played_notes, tempo, 90);
+            var n = addFile(y);
+            alert(n);
+            n =
+            merge(colors[i], n, tempo, 90);
 
         }
 
@@ -105,22 +107,23 @@ function playTable() {
         container[i] = [];
     }
     for (var i = 0; i < notes.length; i++) {
+        var check = 0;
         for(var j = 0; j < columns.length; j++){
-            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+            //var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+            var whichClass = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString() + "_q";
 
-
-            var x = document.getElementById(whichId);
-            if (x.innerHTML != '') {
-                //var key = x.querySelector(".key").innerHTML;
-                var key = MIDI.noteToKey[notes[i]];
-                var duration = x.querySelector(".duration").innerHTML;
-                var volume = x.querySelector(".volume").innerHTML;
+            //var x = document.getElementById(whichId);
+            var x = document.getElementsByClassName(whichClass);
+            if(x.length > 0) {
+                var key = x[0].getAttribute("data-key");
+                var duration = x[0].getAttribute("data-duration");
+                var volume = x[0].getAttribute("data-volume");
                 var note = {key: key, duration: duration, volume: volume};
                 var n = container[j];
                 n.push(note);
                 container[j] = n;
-
             }
+
         }
     }
     //MIDI.setVolume(0, 100,0);
@@ -249,20 +252,24 @@ function merge(color, notes, dur, vol) {
     }
 
 }
-function addFile(myArray, color){
+function addFile(myArray){
+    var notes_played = new Set();
     for (var i = 0; i < myArray.length; i++) {
         for (var j = 0; j < myArray[i].length; j++) {
             if(myArray[i][j] == 1) {
-                var my_id = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-                document.getElementById(my_id).style.cssText = "border: 3px solid " +color+";";
-
-                document.getElementById(my_id).innerHTML = "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
-                                "</div><div class = 'duration'>"+tempo+
-                                "</div><div class = 'volume'>"+90+"</div>";
-
+                var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+                var whichClass = whichId + "_q";
+                notes_played.add(whichClass);
+                var column = parseFloat(whichId.split("_")[1]);
+                for(var x = 0; x < 4; x++) {
+                    var column_temp = column + (0.0625 * x);
+                    var id_temp = MIDI.noteToKey[notes[i]] + "_" + column_temp.toString();
+                   // document.getElementById(id_temp).className = whichClass;
+                }
             }
         }
     }
+    return notes_played;
 }
 
 
