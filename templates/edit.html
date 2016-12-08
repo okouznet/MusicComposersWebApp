@@ -273,17 +273,21 @@ function addFile(myArray){
 }
 
 
+
 function editNote(whichId){
-    start_id = '';
-    end_id = '';
-    var x = document.getElementById(whichId);
-    var key = whichId.split('_')[0];
+    start = '';
+    end = '';
+    start_class = '';
+    //var x = document.getElementById(whichId);
+    var x_class_name = document.getElementById(whichId).className;
+    var x = document.getElementsByClassName(x_class_name);
+    var key = x_class_name.split('_')[0];
     var duration = tempo;
     var volume = 90;
-    if (x.innerHTML != '') {
-        duration = x.querySelector(".duration").innerHTML;
-        volume = x.querySelector(".volume").innerHTML;
-        key = x.querySelector(".key").innerHTML;
+    if (x.length > 0) {
+        duration = x[0].getAttribute("data-duration");
+        volume = x[0].getAttribute("data-volume");
+        key = x[0].getAttribute("data-key");
     }
 
     var form = "<div id = 'form'>";
@@ -365,9 +369,10 @@ function deleteNote(whichId) {
 }
 
 function updateNote(whichId) {
-
-    var duration = document.getElementById("form_duration").value;
-    var volume = document.getElementById("form_volume").value;
+    var whichClass = document.getElementById(whichId).className;
+    var x = document.getElementsByClassName(whichClass);
+    var duration = x[0].getAttribute("data-duration");
+    var volume = x[0].getAttribute("data-volume");
     if (duration == '') {
         duration = 128;
     }
@@ -375,12 +380,17 @@ function updateNote(whichId) {
         volume = 90;
     }
     //update note in table
-    document.getElementById(whichId).querySelector(".duration").innerHTML = duration;
-    document.getElementById(whichId).querySelector(".volume").innerHTML = volume;
-
+    for (var i = 0; i < x.length; x++) {
+        x[i].setAttribute("data-duration", duration);
+        x[i].setAttribute("data-volume", duration);
+    }
 }
+
 //function to add note
 function addNote(whichId) {
+
+    var whichClass = document.getElementById(whichId) + "_q";
+
     var duration = document.getElementById("form_duration").value;
     if (duration == '') {
         duration = tempo;
@@ -395,14 +405,16 @@ function addNote(whichId) {
     }
 
     //update note in table
+    var notes = new Set();
+    notes.add(whichClass);
+    for (var i = 0; i < 4; i++) {
+        //UNDEFINED ERROR
+        var column = parseFloat(whichId.split('_')[1]) + (0.0625*i);
+        var end_id = note + '_' + column;
+        document.getElementById(whichId).className = whichClass;
+    }
     color = "DarkSlateBlue";
-    var result = "<div class = 'key'>"+note+ "</div><div class = 'duration'>"+duration+"</div><div class = 'volume'>"+volume+"</div>";
-
-    var id = note + '_' + (whichId.split("_"))[1];
-    document.getElementById(id).innerHTML = result;
-    document.getElementById(id).style.cssText = "border: 3px solid " +color+";";
-
-
+    merge(color, notes, duration, volume);
 }
 
 var start = '';
@@ -427,31 +439,33 @@ function clickAndDrop(e) {
     }
 
     else if (start != '') {
-        e.preventDefault();
         //reset ids
         if(start != '') {
 
             end = e.target.id;
-            var end_class_name = end + "_q";
+            if (start != end) {
+                 var end_class_name = end + "_q";
 
-            var notes = new Set();
-            notes.add(end_class_name);
+                var notes = new Set();
+                notes.add(end_class_name);
 
-            var start_cells = document.getElementsByClassName(start_class);
-            var duration = start_cells[0].getAttribute("data-duration");
-            var volume = start_cells[0].getAttribute("data-volume");
-            var ids = [];
-            for (var i = 0; i < start_cells.length; i++) {
-                //UNDEFINED ERROR
-                ids.push(start_cells[i].id);
-                var column = parseFloat(end.split('_')[1]) + (0.0625*i);
-                var end_id = end.split('_')[0] + '_' + column;
-                document.getElementById(end_id).className = end_class_name;
+                var start_cells = document.getElementsByClassName(start_class);
+                var duration = start_cells[0].getAttribute("data-duration");
+                var volume = start_cells[0].getAttribute("data-volume");
+                var ids = [];
+                for (var i = 0; i < start_cells.length; i++) {
+                    //UNDEFINED ERROR
+                    ids.push(start_cells[i].id);
+                    var column = parseFloat(end.split('_')[1]) + (0.0625*i);
+                    var end_id = end.split('_')[0] + '_' + column;
+                    document.getElementById(end_id).className = end_class_name;
+                }
+                merge(colors[0], notes, duration, volume);
+                for (var j = 0; j < ids.length; j++)  {
+                    deleteNote(ids[j]);
+                }
             }
-            merge(colors[0], notes, duration, volume);
-            for (var j = 0; j < ids.length; j++)  {
-                deleteNote(ids[j]);
-            }
+
         }
         start = '';
         start_class = '';
@@ -468,7 +482,7 @@ function updateTimeMeasure() {
 
         var new_columns = [];
         for (var i = 0; i < num_beats; i++) {
-            x = (i * (1/numerator)).toFixed(2);
+            x = (i * (1/numerator*denominator)).toFixed(2);
             new_columns.push(x)
         }
         columns = new_columns;
