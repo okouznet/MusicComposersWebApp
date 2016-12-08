@@ -43,6 +43,10 @@ columns = [];
 notes = [];
 colors = [];
 tempo = 128;
+
+duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
+num_squares = {'w': 4 * 4, 'h': 4 * 2, 'q': 4, 'e': 4/2, 's': 4/4};
+
 window.onload = function () {
     data = {{ data|tojson }};
     columns = {{ columns|tojson }};
@@ -57,7 +61,7 @@ window.onload = function () {
         }
         var result = makeTableHTML(x, colors[0]);
         $('#table-drag').html(result);
-        merge(colors[0], played_notes, tempo, 90);
+        merge(played_notes, tempo, 90, tmp = "background-color: " +colors[0]+";");
         for(var i = 1; i < data.length; i++) {
             var y = new Array(notes.length);
 
@@ -65,9 +69,7 @@ window.onload = function () {
                 y[j] = data[i][notes[j]];
             }
             var n = addFile(y);
-            alert(n);
-            n =
-            merge(colors[i], n, tempo, 90);
+            merge(n, tempo, 90, "background-color: " +colors[i]+";");
 
         }
 
@@ -238,13 +240,13 @@ function makeTableHTML(myArray, color) {
     return result;
 }
 
-function merge(color, notes, dur, vol) {
+function merge(notes, dur, vol, color) {
     var temp = Array.from(notes);
     for(var i = 0; i < temp.length; i++) {
         var note = temp[i].split('_')[0];
         var table_cell = document.getElementsByClassName(temp[i]);
         for (var j = 0; j < table_cell.length; j++) {
-            table_cell[j].style.cssText = "background-color: " +color+";";
+            table_cell[j].style.cssText = color;
             table_cell[j].setAttribute("data-key", note);
             table_cell[j].setAttribute("data-duration", dur);
             table_cell[j].setAttribute("data-volume", vol);
@@ -292,17 +294,30 @@ function editNote(whichId){
 
     var form = "<div id = 'form'>";
     form += " Note: <input type='text' id='form_key' placeholder='"+key+"'> ";
-    form += "Duration: <input type='text' id='form_duration' placeholder='"+duration+"'>";
+    form += "<br><br>";
 
+    var notes_duration = ['w', 'h', 'q', 'e', 's'];
+    var notes_duration_names = ["Whole", "Half", "Quarter", "Eigth", "Sixteenth"];
+
+    form += "Duration: ";
+    for (var i = 0; i < notes_duration.length; i++) {
+        var dur_id = 'form_duration_' + notes_duration[i];
+        form += "<input type='checkbox' id='"+dur_id+"'>" + notes_duration_names[i];
+    }
+    //'" + notes_duration[i] + "
+
+    form += "<br><br>";
 
     form += " Volume: <input type='text' id='form_volume' placeholder='"+volume+"'> ";
-   // alert(whichId);
+    form += "<br><br>";
+
     form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
     form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
     form += "<button onclick='addNote(\"" + whichId + "\")'>" + "Add" + "</button>";
     form += "</div>";
 
     $('#edit-note').html(form);
+
 
 }
 
@@ -371,15 +386,56 @@ function deleteNote(whichId) {
 function updateNote(whichId) {
     var whichClass = document.getElementById(whichId).className;
     var x = document.getElementsByClassName(whichClass);
-    var duration = x[0].getAttribute("data-duration");
-    var volume = x[0].getAttribute("data-volume");
+    var current_duration = x[0].getAttribute("data-duration");
+    var current_duration_flag = whichClass.split("_")[2];
+    var volume = document.getElementById("form_volume").value;
+     if (volume == '') {
+        volume = 90;
+    }
+
+    var duration = '';
+    var notes_duration = ['w', 'h', 'q', 'e', 's'];
+    var duration_flag = [];
+    for (var i = 0; i < notes_duration.length; i++) {
+        var dur_id = "form_duration_" + notes_duration[i];
+
+        var marked = document.getElementById(dur_id).checked;
+        if(marked) {
+            duration = duration_dict[notes_duration[i]];
+            duration_flag = notes_duration[i];
+            break;
+        }
+    }
     if (duration == '') {
         duration = 128;
     }
-    if (volume == '') {
-        volume = 90;
+    //update note duration visualization
+    var curr_n_squares = num_squares[current_duration_flag];
+
+    var n = num_squares[duration_flag] - curr_n_squares;
+    var end_column = x[curr_n_squares - 1].id.split('_')[1];
+    var note_set = new Set();
+    if (duration > current_duration) { //BUG: MAKE SURE NOT END OF TABLE
+        for(var i = 1; i < n+1; i++) {
+            var tmp_column = parseFloat(end_column) + (0.0625 * i);
+            var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
+            var tmp_class = tmp_id +"_" +  duration_flag;
+            document.getElementById(tmp_id).className = tmp_class;
+            note_set.add(tmp_class);
+        }
+        var cssText = x[0].style.cssText;
+        merge(note_set, duration, volume, cssText);
     }
-    //update note in table
+    else if (duration < current_duration) {
+        n = n * -1;
+        //delete n notes
+        for (var i = curr_n_squares, j = 0; i > n, j < n; i--, j++) {
+            var tmp_column = parseFloat(end_column) - (0.0625 * j);
+            var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
+            deleteNote(tmp_id);
+        }
+    }
+    //update all notes in table
     for (var i = 0; i < x.length; x++) {
         x[i].setAttribute("data-duration", duration);
         x[i].setAttribute("data-volume", duration);
@@ -389,12 +445,23 @@ function updateNote(whichId) {
 //function to add note
 function addNote(whichId) {
 
-    var whichClass = document.getElementById(whichId) + "_q";
 
-    var duration = document.getElementById("form_duration").value;
-    if (duration == '') {
-        duration = tempo;
+    var duration = tempo;
+    var notes_duration = ['w', 'h', 'q', 'e', 's'];
+    var duration_flag = '';
+    for (var i = 0; i < notes_duration.length; i++) {
+        var dur_id = "form_duration_" + notes_duration[i];
+
+        var marked = document.getElementById(dur_id).checked;
+        if(marked) {
+            duration = duration_dict[notes_duration[i]];
+            duration_flag = notes_duration[i];
+            break;
+        }
     }
+    //alert(duration);
+    var whichClass = whichId + "_" + duration_flag;
+
     var volume = document.getElementById("form_volume").value;
     if (volume == '') {
         volume = 90;
@@ -407,14 +474,16 @@ function addNote(whichId) {
     //update note in table
     var notes = new Set();
     notes.add(whichClass);
-    for (var i = 0; i < 4; i++) {
+
+    for (var i = 0; i < num_squares[duration_flag]; i++) {
         //UNDEFINED ERROR
         var column = parseFloat(whichId.split('_')[1]) + (0.0625*i);
-        var end_id = note + '_' + column;
-        document.getElementById(whichId).className = whichClass;
+        var end_id = note + '_' + column.toString();
+        document.getElementById(end_id).className = whichClass;
     }
-    color = "DarkSlateBlue";
-    merge(color, notes, duration, volume);
+    var color = "background-color: DarkSlateBlue;";
+    merge(notes, duration, volume, color);
+
 }
 
 var start = '';
@@ -437,15 +506,12 @@ function clickAndDrop(e) {
 
         }
     }
-
     else if (start != '') {
         //reset ids
         if(start != '') {
-
             end = e.target.id;
             if (start != end) {
-                 var end_class_name = end + "_q";
-
+                var end_class_name = end + "_q";
                 var notes = new Set();
                 notes.add(end_class_name);
 
@@ -460,12 +526,12 @@ function clickAndDrop(e) {
                     var end_id = end.split('_')[0] + '_' + column;
                     document.getElementById(end_id).className = end_class_name;
                 }
-                merge(colors[0], notes, duration, volume);
+                var cssText = start_cells[0].style.cssText;
+                merge(notes, duration, volume, cssText);
                 for (var j = 0; j < ids.length; j++)  {
                     deleteNote(ids[j]);
                 }
             }
-
         }
         start = '';
         start_class = '';
