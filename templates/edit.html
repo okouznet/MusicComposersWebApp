@@ -38,7 +38,7 @@
 
 <script>
 data = [];
-file_matrix = [];
+played_notes = new Set();
 columns = [];
 notes = [];
 colors = [];
@@ -49,7 +49,6 @@ window.onload = function () {
     colors = {{ colors|tojson }};
     notes = {{ notes|tojson }};
 
-    alert(columns);
     if(data.length > 0) {
         var x = new Array(notes.length);
         //initialize Array
@@ -58,7 +57,7 @@ window.onload = function () {
         }
         var result = makeTableHTML(x, colors[0]);
         $('#table-drag').html(result);
-
+        merge(colors[0], played_notes, tempo, 90);
         for(var i = 1; i < data.length; i++) {
             var y = new Array(notes.length);
 
@@ -66,6 +65,8 @@ window.onload = function () {
                 y[j] = data[i][notes[j]];
             }
             addFile(y, colors[i]);
+            merge(colors[i], played_notes, tempo, 90);
+
         }
 
     }
@@ -80,11 +81,8 @@ window.onload = function () {
         }
         var empty_table = makeTableHTML(x, "DarkSlateBlue");
         $('#table-drag').html(empty_table);
-        file_matrix = x;
     }
-
     //merge cells in table
-
     MIDI.loadPlugin({
 		    soundfontUrl: "../static/midi_files/examples/soundfont/",
 		    instrument: "acoustic_grand_piano",
@@ -205,23 +203,16 @@ function makeTableHTML(myArray, color) {
             var height = 100 / notes.length;
             if(tempArray[i][j]== 1) {
                 note_class = whichId + "_q";
-                result += "<td id = " + whichId +" class='note_class' style='border: 3px solid " +color+";' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\")'>" +
-                            "<div class = 'key'>"+MIDI.noteToKey[notes[i]]+
-                            "</div><div class = 'duration'>"+tempo+
-                            "</div><div class = 'volume'>"+90+"</div>" +
-                        "</td>";
+                played_notes.add(note_class);
+                result += "<td id = " + whichId +" class="+note_class+" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
                 //remove zeros due to colspan
                 quarter += 1;
                 prev_note = MIDI.noteToKey[notes[i]];
                 //if (j < tempArray[i].length)
             } else if (quarter != 0) {
-                result += "<td id = " + whichId +" class='note_class' style='border: 3px solid " +color+";' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\")'>" +
-                            "<div class = 'key'>"+prev_note+
-                            "</div><div class = 'duration'>"+tempo+
-                            "</div><div class = 'volume'>"+90+"</div>" +
-                        "</td>";
+                result += "<td id = " + whichId +" class="+note_class+" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
                 quarter += 1;
                 if (quarter == 4) {
                     //merge previous cells
@@ -230,7 +221,7 @@ function makeTableHTML(myArray, color) {
             }
             else {
 
-                result += "<td id = " + whichId +" class='table-drag' style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                result += "<td id = " + whichId +" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
                         "ondblclick='editNote(\"" + whichId + "\")'></td>";
 
             }
@@ -240,24 +231,23 @@ function makeTableHTML(myArray, color) {
         result += "</tr>";
     }
     result += "</table>";
-    file_matrix = tempArray;
+
     return result;
 }
 
-function merge() {
- var table = document.getElementById('table');
-    alert(table.rows[0]);
-    for (var i = 0, row; row = table.rows[i]; i++) {
-
-        for (var j = 0, col; col = row.cells[j]; j++) {
-            if (col != '') {
-                alert(col.innerHTML);
-            }
-     //iterate through columns
-     //columns would be accessed using the "col" variable assigned in the for loop
+function merge(color, notes, dur, vol) {
+    var temp = Array.from(notes);
+    for(var i = 0; i < temp.length; i++) {
+        var note = temp[i].split('_')[0];
+        var table_cell = document.getElementsByClassName(temp[i]);
+        for (var j = 0; j < table_cell.length; j++) {
+            table_cell[j].style.cssText = "background-color: " +color+";";
+            table_cell[j].setAttribute("data-key", note);
+            table_cell[j].setAttribute("data-duration", dur);
+            table_cell[j].setAttribute("data-volume", vol);
         }
-
     }
+
 }
 function addFile(myArray, color){
     for (var i = 0; i < myArray.length; i++) {
@@ -277,7 +267,6 @@ function addFile(myArray, color){
 
 
 function editNote(whichId){
-    merge();
     start_id = '';
     end_id = '';
     var x = document.getElementById(whichId);
@@ -334,9 +323,7 @@ function saveFile() {
                 else if (key.length == 3) {
                     key = key[0] + key[1] + '-' + key[2];
                 }
-                //var duration = x.querySelector(".duration").innerHTML;
-                //var volume = x.querySelector(".volume").innerHTML;
-                //var note = {key: key, duration: duration, volume: volume};
+
                 var n = container[j];
                 n.push(key);
                 container[j] = n;
@@ -366,9 +353,8 @@ function saveFile() {
 
 // delete function
 function deleteNote(whichId) {
-    document.getElementById(whichId).innerHTML = '';
     document.getElementById(whichId).style.cssText = '';
-    //document.getElementById(whichId).colSpan = 1;
+    document.getElementById(whichId).className = '';
 }
 
 function updateNote(whichId) {
@@ -412,39 +398,57 @@ function addNote(whichId) {
 
 }
 
-var start_id = '';
-var end_id = '';
-var tmp_div;
+var start = '';
+var start_class = '';
+var end = '';
 function clickAndDrop(e) {
-    merge();
 
-    if ((end_id == '') && (start_id == '')) {
+    if ((start == '') && (end == '')) {
         var t = e.target;
+
         while(t && !t.id) t = t.parentNode;
         if( t) {
 
-            start_id = (t.id);
-            if (start_id == null) {
-                start_id = '';
+            start_class = (t.className);
+            start = t.id;
+            if (start == null) {
+                start = '';
+                start_class = '';
             }
-            else {
-                tmp_div = document.getElementById(t.id);
-            }
+
         }
     }
-    else if (start_id != '') {
+
+    else if (start != '') {
         e.preventDefault();
         //reset ids
-        if(start_id != '') {
-            end_id = e.target.id;
-            document.getElementById(end_id).innerHTML = document.getElementById(start_id).innerHTML;
-            document.getElementById(end_id).style.cssText = document.getElementById(start_id).style.cssText;
-            //document.getElementById(end_id).colSpan = document.getElementById(start_id).colSpan;
-            deleteNote(start_id);
-            //update table
+        if(start != '') {
+
+            end = e.target.id;
+            var end_class_name = end + "_q";
+
+            var notes = new Set();
+            notes.add(end_class_name);
+
+            var start_cells = document.getElementsByClassName(start_class);
+            var duration = start_cells[0].getAttribute("data-duration");
+            var volume = start_cells[0].getAttribute("data-volume");
+            var ids = [];
+            for (var i = 0; i < start_cells.length; i++) {
+                //UNDEFINED ERROR
+                ids.push(start_cells[i].id);
+                var column = parseFloat(end.split('_')[1]) + (0.0625*i);
+                var end_id = end.split('_')[0] + '_' + column;
+                document.getElementById(end_id).className = end_class_name;
+            }
+            merge(colors[0], notes, duration, volume);
+            for (var j = 0; j < ids.length; j++)  {
+                deleteNote(ids[j]);
+            }
         }
-        start_id = '';
-        end_id = '';
+        start = '';
+        start_class = '';
+        end = '';
     }
 }
 
