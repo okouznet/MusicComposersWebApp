@@ -55,7 +55,6 @@ header {
 
 #table-drag{
 	width: 90%;
-	height: 40%;
 	max-height: 400px;
 	overflow: scroll;
 
@@ -68,7 +67,6 @@ header {
     margin-right: auto;
 	background-color: #eee;
     /*width:100%;*/
-	max-height: 5px;
 	border-collapse: collapse;
 	/*margin: 7px;*/
 }
@@ -76,10 +74,8 @@ header {
 /* table cells */
 div#table-drag td{
 	cursor: pointer;
+	max-height: 5px;
 	border: 1px solid black;
-	text-align: center;
-	font-size: 10pt;
-	padding: 0.5%;
 }
 
 /* drag object (DIV inside table cell) */

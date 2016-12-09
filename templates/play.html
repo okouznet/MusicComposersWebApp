@@ -122,11 +122,13 @@
 
     queue = [];
     play_song = 0;
+    song = '';
     function startPlayAlong() {
         //reset play along
         stopPlayAlong();
         play_song = 1;
-        queue = {{ music|tojson }};
+        var moonlight = {{ moonlight|tojson }}
+        queue = moonlight;
         //queue.shift();
         var chord = queue[0];
         for (var i = 0; i < chord.length; i++) {

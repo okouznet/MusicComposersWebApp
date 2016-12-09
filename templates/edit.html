@@ -99,73 +99,6 @@ window.onload = function () {
     });
 };
 
-/*
-function playTable() {
-
-    var temp_notes = notes;
-    var tracks = [];
-    alert("check4");
-    var container = []; //go through table and push notes to container
-    for (var i = 0; i < notes.length; i++)  {
-        var temp = [];
-        //var j = 0;
-        //while (j < columns.length) {
-        for(var j = 0; j < columns.length; j++) {
-            var whichId =  MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-
-            var whichClass = document.getElementById(whichId).className;
-
-            var x = document.getElementsByClassName(whichClass);
-            //var temp = [];
-            if(x.length > 0)  { //create note and push it to container
-                //alert(whichClass);
-                var duration_flag = whichClass.split("_")[2];
-
-                var key = x[0].getAttribute("data-key");
-                var duration = x[0].getAttribute("data-duration");
-                var volume = x[0].getAttribute("data-volume");
-                var note = {key: key, duration: duration, volume: volume};
-                temp.push(note);
-                j = j + num_squares[duration_flag];
-            }
-            //PAUSE
-            else {
-                var note = {key: 'C3', duration: duration_dict['s'], volume: 1};
-                temp.push(note);
-                //j += 1;
-            }
-
-        }
-        if (temp.length > 0) {
-            container.push(temp);
-        }
-
-    }
-    //alert(container.length);
-
-    //create a track for each row in container:
-
-    for (var m = 0; m < container.length; m++) {
-        var temp_container = [];
-        temp_container.push(container[i]);
-
-        var noteEvents = [];
-        container.forEach(function(note) {
-            Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
-        });
-        var track = new MidiTrack({ events: noteEvents });
-        tracks.push(track);
-
-    }
-    alert(tracks.length);
-    song  = MidiWriter({ tracks: tracks });
-    var file = "data:audio/midi;base64," + song.b64;
-    MIDI.Player.loadFile(file, MIDI.Player.start);
-    MIDI.Player.start();
-
-
-}
-*/
 
 function playTable() {
     //create tracks
@@ -232,7 +165,7 @@ function playTable() {
 
         }
     }
-   
+
     //create file
     var str = mf.dump(); // MIDI file dumped as a string
     var b64 = JZZ_.MidiFile.toBase64(str); // convert to base-64 string
@@ -283,18 +216,12 @@ function makeTableHTML(myArray) {
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
         var colwidth = width / columns.length;
         if( i != 0) {
-            //var colwidth = 95/ (columns.length);
-            //' width='" + colwidth + "%'
+
             result += "<col class='col-" + i + " width='" + colwidth + "%'/>"
         }
-        /*
         else {
-            //var colwidth = 5;
-            result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
-
+            result += "<col class='col-" + i + " width='2%'/>"
         }
-        */
-
     }
 
     result += "</colgroup>";
@@ -319,7 +246,6 @@ function makeTableHTML(myArray) {
         var note_class = '';
         for(var j=0; j<columns.length; j++){
             var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-            var height = 100 / notes.length;
             if(tempArray[i][j]== 1) {
                 note_class = whichId + "_q";
                 played_notes.add(note_class);
@@ -416,9 +342,6 @@ function editNote(whichId){
     }
 
     var form = "<div id = 'form'>";
-    form += " Note: <input type='text' id='form_key' placeholder='"+key+"'> ";
-    form += "    ";
-
     var notes_duration = ['w', 'h', 'q', 'e', 's'];
     var notes_duration_names = ["Whole", "Half", "Quarter", "Eigth", "Sixteenth"];
 
@@ -527,67 +450,46 @@ function updateNote(whichId) {
     added_notes.delete(whichClass);
 
     var x = document.getElementsByClassName(whichClass);
-    var current_duration = x[0].getAttribute("data-duration");
-    var current_duration_flag = whichClass.split("_")[2];
-    var volume = document.getElementById("form_volume").value;
-     if (volume == '') {
-        volume = 90;
-    }
+    if (x.length > 0) {
+         var cssText = x[0].style.cssText;
 
-    var duration = tempo;
-    var notes_duration = ['w', 'h', 'q', 'e', 's'];
-    var duration_flag = [];
-    for (var i = 0; i < notes_duration.length; i++) {
-        var dur_id = "form_duration_" + notes_duration[i];
-        //ADD BOUNDARY CHECK
-        var marked = document.getElementById(dur_id).checked;
-        if(marked) {
-            duration = duration_dict[notes_duration[i]];
-            duration_flag = notes_duration[i];
-            break;
+        var volume = document.getElementById("form_volume").value;
+        if (volume == '') {
+            volume = 90;
         }
-    }
 
-    //update note duration visualization
-    var curr_n_squares = num_squares[current_duration_flag];
+        var new_duration = tempo;
+        var notes_duration = ['w', 'h', 'q', 'e', 's'];
+        var duration_flag = [];
+        for (var i = 0; i < notes_duration.length; i++) {
+            var dur_id = "form_duration_" + notes_duration[i];
+            //ADD BOUNDARY CHECK
+            var marked = document.getElementById(dur_id).checked;
+            if(marked) {
+                new_duration = duration_dict[notes_duration[i]];
+                duration_flag = notes_duration[i];
+                break;
+            }
+        }
+        //new class name
+        var new_class = whichId +"_" +  duration_flag;
+        var note_set = new Set();
+        note_set.add(new_class);
+        //delete old class name
+        deleteNote1(whichId);
 
-    var n = num_squares[duration_flag] - curr_n_squares;
-    var end_column = x[curr_n_squares - 1].id.split('_')[1];
-    var note_set = new Set();
-
-    var tmp_class = tmp_id +"_" +  duration_flag;
-    added_notes.add(tmp_class);
-    if (duration > current_duration) { //BUG: MAKE SURE NOT END OF TABLE
-        for(var i = 1; i < n+1; i++) {
-            var tmp_column = parseFloat(end_column) + ((1/(numerator * denominator)) * i);
+        //update notes
+        var n = num_squares[duration_flag];
+        var start_column = whichId.split('_')[1];
+        for (var i = 0; i < n; i++) {
+            var tmp_column = parseFloat(start_column) + ((1/(numerator * denominator)) * i);
             if (columns.indexOf(tmp_column) == -1)
                 break;
             var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
+            document.getElementById(tmp_id).className = new_class;
 
-            document.getElementById(tmp_id).className = tmp_class;
-
-            note_set.add(tmp_class);
         }
-        var cssText = x[0].style.cssText;
-
-
-        merge(note_set, duration, volume, cssText);
-    }
-    else if (duration < current_duration) {
-        n = n * -1;
-        //delete n notes
-        for (var i = curr_n_squares, j = 0; i > n, j < n; i--, j++) {
-            var tmp_column = parseFloat(end_column) - ((1/(numerator * denominator)) * j);
-            if (columns.indexOf(tmp_column) == -1)
-                break;
-            var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
-            deleteNote(tmp_id);
-        }
-    }
-    //update all notes in table
-    for (var i = 0; i < x.length; x++) {
-        x[i].setAttribute("data-duration", duration);
-        x[i].setAttribute("data-volume", volume);
+        merge(note_set, new_duration, volume, cssText);
     }
 }
 
@@ -615,10 +517,7 @@ function addNote(whichId) {
     if (volume == '') {
         volume = 90;
     }
-    var note = document.getElementById("form_key").value;
-    if (note == '') {
-        note = whichId.split('_')[0];
-    }
+    var note = whichId.split('_')[0];
 
     //update note in table
     var notes = new Set();
