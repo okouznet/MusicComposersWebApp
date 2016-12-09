@@ -38,12 +38,14 @@
 
 <script>
 data = [];
-played_notes = new Set();
+added_notes = new Set();
 columns = [];
 notes = [];
 colors = [];
 tempo = 128;
-
+velocity = 127; //BUG IN FILE
+numerator = 4;
+denominator = 4;
 duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
 num_squares = {'w': 4 * 4, 'h': 4 * 2, 'q': 4, 'e': 4/2, 's': 4/4};
 
@@ -59,9 +61,8 @@ window.onload = function () {
         for (var i = 0; i < x.length; i++) {
             x[i] = data[0][notes[i]];
         }
-        var result = makeTableHTML(x, colors[0]);
-        $('#table-drag').html(result);
-        merge(played_notes, tempo, 90, tmp = "background-color: " +colors[0]+";");
+        var played_notes = makeTableHTML(x);
+        merge(played_notes, 128, 90, tmp = "background-color: " +colors[0]+";");
         for(var i = 1; i < data.length; i++) {
             var y = new Array(notes.length);
 
@@ -69,22 +70,21 @@ window.onload = function () {
                 y[j] = data[i][notes[j]];
             }
             var n = addFile(y);
-            merge(n, tempo, 90, "background-color: " +colors[i]+";");
+            merge(n, 128, 90, "background-color: " +colors[i]+";");
 
         }
 
     }
     else {
-        for (var i = 0; i < 12; i++) {
-            columns.push(i * (1/4))
+        for (var i = 0; i < 32; i++) {
+            columns.push(i * (1/(numerator * denominator)))
         }
         var x = new Array(notes.length);
         //initialize Array
         for (var i = 0; i < x.length; i++) {
             x[i] = [];
         }
-        var empty_table = makeTableHTML(x, "DarkSlateBlue");
-        $('#table-drag').html(empty_table);
+        makeTableHTML(x);
     }
     //merge cells in table
     MIDI.loadPlugin({
@@ -99,66 +99,147 @@ window.onload = function () {
     });
 };
 
+/*
 function playTable() {
-    //gets table
-    var temp_notes = notes;
-    var table = document.getElementById('table');
-    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
-    //loops through rows - index 1 to skip headers
-    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
-        container[i] = [];
-    }
-    for (var i = 0; i < notes.length; i++) {
-        var check = 0;
-        for(var j = 0; j < columns.length; j++){
-            //var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-            var whichClass = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString() + "_q";
 
-            //var x = document.getElementById(whichId);
+    var temp_notes = notes;
+    var tracks = [];
+    alert("check4");
+    var container = []; //go through table and push notes to container
+    for (var i = 0; i < notes.length; i++)  {
+        var temp = [];
+        //var j = 0;
+        //while (j < columns.length) {
+        for(var j = 0; j < columns.length; j++) {
+            var whichId =  MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+
+            var whichClass = document.getElementById(whichId).className;
+
             var x = document.getElementsByClassName(whichClass);
-            if(x.length > 0) {
+            //var temp = [];
+            if(x.length > 0)  { //create note and push it to container
+                //alert(whichClass);
+                var duration_flag = whichClass.split("_")[2];
+
                 var key = x[0].getAttribute("data-key");
                 var duration = x[0].getAttribute("data-duration");
                 var volume = x[0].getAttribute("data-volume");
                 var note = {key: key, duration: duration, volume: volume};
-                var n = container[j];
-                n.push(note);
-                container[j] = n;
+                temp.push(note);
+                j = j + num_squares[duration_flag];
+            }
+            //PAUSE
+            else {
+                var note = {key: 'C3', duration: duration_dict['s'], volume: 1};
+                temp.push(note);
+                //j += 1;
+            }
+
+        }
+        if (temp.length > 0) {
+            container.push(temp);
+        }
+
+    }
+    //alert(container.length);
+
+    //create a track for each row in container:
+
+    for (var m = 0; m < container.length; m++) {
+        var temp_container = [];
+        temp_container.push(container[i]);
+
+        var noteEvents = [];
+        container.forEach(function(note) {
+            Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
+        });
+        var track = new MidiTrack({ events: noteEvents });
+        tracks.push(track);
+
+    }
+    alert(tracks.length);
+    song  = MidiWriter({ tracks: tracks });
+    var file = "data:audio/midi;base64," + song.b64;
+    MIDI.Player.loadFile(file, MIDI.Player.start);
+    MIDI.Player.start();
+
+
+}
+*/
+
+function playTable() {
+    //create tracks
+    var tracks = [];
+    alert("check1");
+    var container = []; //go through table and push notes to container
+    for (var i = 0; i < notes.length; i++)  {
+        var temp = [];
+        var temp_clock = []
+        var c = duration_dict['s'];
+        //var j = 0;
+        //while (j < columns.length) {
+        for(var j = 0; j < columns.length; j++) {
+
+            var whichId =  MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+
+            var whichClass = document.getElementById(whichId).className;
+
+            var x = document.getElementsByClassName(whichClass);
+            //var temp = [];
+            if(x.length > 0)  { //create note and push it to container
+                //alert(whichClass);
+                var duration_flag = whichClass.split("_")[2];
+
+                var key = x[0].getAttribute("data-key");
+                var duration = x[0].getAttribute("data-duration");
+                var volume = x[0].getAttribute("data-volume");
+                var note = {key: key, duration: duration, volume: volume, clock: c};
+                temp.push(note);
+                j = j + num_squares[duration_flag];
+                 c += duration_dict['s']*num_squares[duration_flag]
+            }
+            //PAUSE
+            else {
+                //var note = {key: 'C3', duration: duration_dict['s'], volume: 1, clock: c};
+                //temp.push(note);
+                c += duration_dict['s']
+            }
+
+        }
+        if (temp.length > 0) {
+            container.push(temp);
+        }
+
+    }
+
+    //create midi file
+    var mf = new JZZ_.MidiFile(1,tempo);
+
+    //create tracks! :
+    for (var n = 0; n < container.length; n++) {
+        var track = new JZZ_.MidiFile.MTrk;
+        mf.push(track);
+
+        track.addMidi(0,0xc0,0x0b);
+        var name = 'music' + n.toString();
+        track.addName(0,name);
+        for (var m = 0; m < container[n].length; m++) {
+            //tr2.addNote(100,0,'E5',127,50); // clock: 100, MIDI channel: 0, note: E5, velocity: 127, duration: 50 clocks
+            track.addNote(container[n][m].clock, 0, container[n][m].key, velocity, container[n][m].duration);
+            if (container[n][m].clock == 0) {
+                track.addNote(container[n][m].clock, 0, container[n][m].key, velocity, container[n][m].duration);
             }
 
         }
     }
-    //MIDI.setVolume(0, 100,0);
-
-    for(var i = 0; i < container.length; i++) {
-        /*
-        if(container[i] == '') {
-            //alert("silent");
-
-            var k = 'C3';
-            var d = 128;
-            var v = 1;
-            var note = {key: k, duration: d, volume: v};
-            var n = [];
-            n.push(note);
-            container[i] = n;
-        }
-        */
-    }
-    container = container.filter(function(n){ return n != '' });
-
-    var noteEvents = [];
-    container.forEach(function(note) {
-        //ADD: pause
-        Array.prototype.push.apply(noteEvents, MidiEvent.createNote(note));
-    });
-    var track = new MidiTrack({ events: noteEvents });
-    var song  = MidiWriter({ tracks: [track] });
-
-    var file = "data:audio/midi;base64," + song.b64;
-    notes = temp_notes;
+   
+    //create file
+    var str = mf.dump(); // MIDI file dumped as a string
+    var b64 = JZZ_.MidiFile.toBase64(str); // convert to base-64 string
+    var file = 'data:audio/midi;base64,' + b64; // data URI
     MIDI.Player.loadFile(file, MIDI.Player.start);
     MIDI.Player.start();
+
 
 }
 
@@ -166,20 +247,53 @@ function stopPlayer(){
     MIDI.Player.stop();
 }
 
-function makeTableHTML(myArray, color) {
-    var result = "<table id='table'>";
+function showData(e) {
+    var target_p = document.getElementById("msg_id");
+    var target_class = e.target.className;
+    var x = document.getElementsByClassName(target_class);
+    if (x.length > 0) {
+        var key = x[0].getAttribute("data-key");
+        var volume = x[0].getAttribute("data-volume");
+        var duration = x[0].getAttribute("data-duration");
+
+        var result = "Key: " + key;
+        //result += "<br>";
+        result += "  Volume: " + volume;
+        //result += "<br>";
+        result += "  Duration: " + duration;
+        //result += "<br>";
+        target_p.style.cssText = "text-align: center; color: white;background-color: black;font-weight: bold;";
+        target_p.innerHTML = result;
+    }
+}
+
+function hideData(e) {
+    var target_p = document.getElementById("msg_id");
+    target_p.innerHTML = '';
+
+}
+function makeTableHTML(myArray) {
+    var played_notes = new Set();
+    var width = columns.length * 5;
+    alert(notes.length);
+
+    var result = "<table id='table' style='width: "+width +"%;'>";
 
     result += "<colgroup>";
     for (var i = 0; i < columns.length+1; i++) { //+1 to account for header column!
+        var colwidth = width / columns.length;
         if( i != 0) {
-            var colwidth = 95/ (columns.length);
-            result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
+            //var colwidth = 95/ (columns.length);
+            //' width='" + colwidth + "%'
+            result += "<col class='col-" + i + " width='" + colwidth + "%'/>"
         }
+        /*
         else {
-            var colwidth = 5;
+            //var colwidth = 5;
             result += "<col class='col-" + i + "' width='" + colwidth + "%'/>"
 
         }
+        */
 
     }
 
@@ -199,7 +313,7 @@ function makeTableHTML(myArray, color) {
 
     var tempArray = myArray;
     for(var i=0; i<tempArray.length; i++) {
-        result += "<td class = 'table-header'>" + MIDI.noteToKey[notes[i]] + "</td>";
+        result += "<td class = 'table-header' >" + MIDI.noteToKey[notes[i]] + "</td>";
         var quarter = 0;
         var prev_note = '';
         var note_class = '';
@@ -209,17 +323,17 @@ function makeTableHTML(myArray, color) {
             if(tempArray[i][j]== 1) {
                 note_class = whichId + "_q";
                 played_notes.add(note_class);
-                result += "<td id = " + whichId +" class="+note_class+" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
                         "ondblclick='editNote(\"" + whichId + "\")'></td>";
                 //remove zeros due to colspan
                 quarter += 1;
                 prev_note = MIDI.noteToKey[notes[i]];
                 //if (j < tempArray[i].length)
             } else if (quarter != 0) {
-                result += "<td id = " + whichId +" class="+note_class+" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
+                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
                         "ondblclick='editNote(\"" + whichId + "\")'></td>";
                 quarter += 1;
-                if (quarter == 4) {
+                if (quarter == denominator) {
                     //merge previous cells
                     quarter = 0;
                 }
@@ -237,7 +351,9 @@ function makeTableHTML(myArray, color) {
     }
     result += "</table>";
 
-    return result;
+    document.getElementById("table-drag").innerHTML = result
+    return played_notes;
+
 }
 
 function merge(notes, dur, vol, color) {
@@ -245,11 +361,18 @@ function merge(notes, dur, vol, color) {
     for(var i = 0; i < temp.length; i++) {
         var note = temp[i].split('_')[0];
         var table_cell = document.getElementsByClassName(temp[i]);
+        dur = duration_dict[temp[i].split('_')[2]]; //CLEAN UP
         for (var j = 0; j < table_cell.length; j++) {
+            if (j >= columns.length) {
+                break;
+            }
             table_cell[j].style.cssText = color;
             table_cell[j].setAttribute("data-key", note);
             table_cell[j].setAttribute("data-duration", dur);
             table_cell[j].setAttribute("data-volume", vol);
+            table_cell[j].addEventListener("mouseover", showData, false);
+            table_cell[j].addEventListener("mouseout", hideData, false);
+
         }
     }
 
@@ -264,7 +387,8 @@ function addFile(myArray){
                 notes_played.add(whichClass);
                 var column = parseFloat(whichId.split("_")[1]);
                 for(var x = 0; x < 4; x++) {
-                    var column_temp = column + (0.0625 * x);
+                    //BUG: ADD BOUNDARY
+                    var column_temp = column + ((1/(numerator * denominator)) * x);
                     var id_temp = MIDI.noteToKey[notes[i]] + "_" + column_temp.toString();
                    // document.getElementById(id_temp).className = whichClass;
                 }
@@ -283,18 +407,17 @@ function editNote(whichId){
     //var x = document.getElementById(whichId);
     var x_class_name = document.getElementById(whichId).className;
     var x = document.getElementsByClassName(x_class_name);
-    var key = x_class_name.split('_')[0];
+    var key = whichId.split('_')[0];
     var duration = tempo;
     var volume = 90;
     if (x.length > 0) {
         duration = x[0].getAttribute("data-duration");
         volume = x[0].getAttribute("data-volume");
-        key = x[0].getAttribute("data-key");
     }
 
     var form = "<div id = 'form'>";
     form += " Note: <input type='text' id='form_key' placeholder='"+key+"'> ";
-    form += "<br><br>";
+    form += "    ";
 
     var notes_duration = ['w', 'h', 'q', 'e', 's'];
     var notes_duration_names = ["Whole", "Half", "Quarter", "Eigth", "Sixteenth"];
@@ -306,13 +429,13 @@ function editNote(whichId){
     }
     //'" + notes_duration[i] + "
 
-    form += "<br><br>";
+    form += "    ";
 
-    form += " Volume: <input type='text' id='form_volume' placeholder='"+volume+"'> ";
+    form += " Volume: <input type='text' id='form_volume' placeholder='1-200'> ";
     form += "<br><br>";
 
     form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
-    form += "<button onclick='deleteNote(\"" + whichId + "\")'>" + "Delete" + "</button>";
+    form += "<button onclick='deleteNote1(\"" + whichId + "\")'>" + "Delete" + "</button>";
     form += "<button onclick='addNote(\"" + whichId + "\")'>" + "Add" + "</button>";
     form += "</div>";
 
@@ -340,9 +463,10 @@ function saveFile() {
             var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
 
 
-            var x = document.getElementById(whichId);
-            if (x.innerHTML != '') {
-                var key = x.querySelector(".key").innerHTML;
+            var x = document.getElementById(whichId).className;
+            if (x != '') {
+                var class_id = document.getElementsByClassName(x);
+                var key = class_id[0].getAttribute("data-key");
                 if (key.length == 2) {
                     key = key[0] + '-' + key[1];
                 }
@@ -381,10 +505,27 @@ function saveFile() {
 function deleteNote(whichId) {
     document.getElementById(whichId).style.cssText = '';
     document.getElementById(whichId).className = '';
+
+
 }
 
+function deleteNote1(whichId) {
+    var class_name = document.getElementById(whichId).className;
+    var x = document.getElementsByClassName(class_name);
+    added_notes.delete(class_name);
+    var ids = [];
+    for (var i = 0; i < x.length; i++) {
+        ids.push(x[i].id);
+    }
+    for (var i = 0; i < ids.length; i++) {
+        deleteNote(ids[i]);
+    }
+
+}
 function updateNote(whichId) {
     var whichClass = document.getElementById(whichId).className;
+    added_notes.delete(whichClass);
+
     var x = document.getElementsByClassName(whichClass);
     var current_duration = x[0].getAttribute("data-duration");
     var current_duration_flag = whichClass.split("_")[2];
@@ -393,12 +534,12 @@ function updateNote(whichId) {
         volume = 90;
     }
 
-    var duration = '';
+    var duration = tempo;
     var notes_duration = ['w', 'h', 'q', 'e', 's'];
     var duration_flag = [];
     for (var i = 0; i < notes_duration.length; i++) {
         var dur_id = "form_duration_" + notes_duration[i];
-
+        //ADD BOUNDARY CHECK
         var marked = document.getElementById(dur_id).checked;
         if(marked) {
             duration = duration_dict[notes_duration[i]];
@@ -406,31 +547,39 @@ function updateNote(whichId) {
             break;
         }
     }
-    if (duration == '') {
-        duration = 128;
-    }
+
     //update note duration visualization
     var curr_n_squares = num_squares[current_duration_flag];
 
     var n = num_squares[duration_flag] - curr_n_squares;
     var end_column = x[curr_n_squares - 1].id.split('_')[1];
     var note_set = new Set();
+
+    var tmp_class = tmp_id +"_" +  duration_flag;
+    added_notes.add(tmp_class);
     if (duration > current_duration) { //BUG: MAKE SURE NOT END OF TABLE
         for(var i = 1; i < n+1; i++) {
-            var tmp_column = parseFloat(end_column) + (0.0625 * i);
+            var tmp_column = parseFloat(end_column) + ((1/(numerator * denominator)) * i);
+            if (columns.indexOf(tmp_column) == -1)
+                break;
             var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
-            var tmp_class = tmp_id +"_" +  duration_flag;
+
             document.getElementById(tmp_id).className = tmp_class;
+
             note_set.add(tmp_class);
         }
         var cssText = x[0].style.cssText;
+
+
         merge(note_set, duration, volume, cssText);
     }
     else if (duration < current_duration) {
         n = n * -1;
         //delete n notes
         for (var i = curr_n_squares, j = 0; i > n, j < n; i--, j++) {
-            var tmp_column = parseFloat(end_column) - (0.0625 * j);
+            var tmp_column = parseFloat(end_column) - ((1/(numerator * denominator)) * j);
+            if (columns.indexOf(tmp_column) == -1)
+                break;
             var tmp_id = whichClass.split("_")[0] + '_' + tmp_column.toString();
             deleteNote(tmp_id);
         }
@@ -438,7 +587,7 @@ function updateNote(whichId) {
     //update all notes in table
     for (var i = 0; i < x.length; x++) {
         x[i].setAttribute("data-duration", duration);
-        x[i].setAttribute("data-volume", duration);
+        x[i].setAttribute("data-volume", volume);
     }
 }
 
@@ -474,14 +623,19 @@ function addNote(whichId) {
     //update note in table
     var notes = new Set();
     notes.add(whichClass);
-
+    added_notes.add(whichClass);
     for (var i = 0; i < num_squares[duration_flag]; i++) {
         //UNDEFINED ERROR
-        var column = parseFloat(whichId.split('_')[1]) + (0.0625*i);
+        var column = parseFloat(whichId.split('_')[1]) + ((1/(numerator * denominator))*i);
+        if (columns.indexOf(column) == -1)
+            break;
+
         var end_id = note + '_' + column.toString();
         document.getElementById(end_id).className = whichClass;
     }
+
     var color = "background-color: DarkSlateBlue;";
+
     merge(notes, duration, volume, color);
 
 }
@@ -518,19 +672,39 @@ function clickAndDrop(e) {
                 var start_cells = document.getElementsByClassName(start_class);
                 var duration = start_cells[0].getAttribute("data-duration");
                 var volume = start_cells[0].getAttribute("data-volume");
-                var ids = [];
-                for (var i = 0; i < start_cells.length; i++) {
+                var start_ids = [];
+                var end_ids = [];
+                var cssText = start_cells[0].style.cssText;
+
+                var start_cells_length = start_cells.length;
+                for (var i = 0; i < start_cells_length; i++) {
+                    start_ids.push(start_cells[i].id);
+                }
+                for (var i = 0; i < start_cells_length; i++) {
+                    deleteNote(start_ids[i]);
+                }
+                for (var i = 0; i < start_cells_length; i++) {
                     //UNDEFINED ERROR
-                    ids.push(start_cells[i].id);
-                    var column = parseFloat(end.split('_')[1]) + (0.0625*i);
+                   // start_ids.push(start_cells[i].id);
+                    var column = parseFloat(end.split('_')[1]) + ((1/(numerator * denominator))*i);
+                    if (columns.indexOf(column) == -1)
+                        break;
                     var end_id = end.split('_')[0] + '_' + column;
+                    end_ids.push(end_id);
                     document.getElementById(end_id).className = end_class_name;
                 }
-                var cssText = start_cells[0].style.cssText;
+
+
                 merge(notes, duration, volume, cssText);
-                for (var j = 0; j < ids.length; j++)  {
-                    deleteNote(ids[j]);
+                /*
+                var diff = start_ids.filter(function(x) { return end_ids.indexOf(x) < 0 });
+                //diff.push(start_ids[start_ids.length-1]);
+                for (var j = 0; j < diff.length; j++)  {
+                    alert(diff[j]);
+                    deleteNote(diff[j]);
                 }
+                */
+
             }
         }
         start = '';
@@ -541,34 +715,90 @@ function clickAndDrop(e) {
 
 function updateTimeMeasure() {
     var num_beats = columns.length;
-    var measure = (document.getElementById("time_measure").value).split("/");
+    //var measure = (document.getElementById("time_measure").value).split("/");
+    var measure = '';
+    if (document.getElementById('time_measure_4/4').checked) {
+        measure = '4/4';
+        document.getElementById('time_measure_4/4').checked = false;
+    }
+    else if (document.getElementById('time_measure_3/4').checked) {
+        measure = '3/4';
+        document.getElementById('time_measure_3/4').checked = false;
+    }
+    else if (document.getElementById('time_measure_2/4').checked) {
+        measure = '4/4';
+        document.getElementById('time_measure_2/4').checked = false;
+    }
+
     if (measure != '') {
-         var numerator = measure[0];
-        var denominator = measure[1];
+
+        //set all
+        var played_notes = new Set();
+        var table = document.getElementById("table-drag");
+        for (var i = 0; i < notes.length; i++) {
+            for(var j = 0; j < columns.length; j++){
+                var whichClass = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString() + "_q";
+                var tmp = document.getElementsByClassName(whichClass);
+                if(tmp.length > 0 ) {
+                    played_notes.add(whichClass);
+                }
+            }
+        }
+        measure = measure.split("/");
+        numerator = measure[0];
+        denominator = measure[1];
 
         var new_columns = [];
         for (var i = 0; i < num_beats; i++) {
-            x = (i * (1/numerator*denominator)).toFixed(2);
+            x = (i * (1/(numerator*denominator))).toFixed(4);
+
             new_columns.push(x)
         }
+
+        document.getElementById('table-drag').innerHTML = '';
         columns = new_columns;
         var x = new Array(notes.length);
         //initialize Array
         for (var i = 0; i < x.length; i++) {
-            x[i] = data[0][notes[i]];
+            var xlen = data[0][notes[i]].length;
+            x[i] = new Array(xlen+1).join('0').split('').map(parseFloat);
         }
-        var result = makeTableHTML(x, colors[0]);
-        $('#table-drag').html(result);
+        makeTableHTML(x, colors[0]);
+        alert(Array.from(played_notes));
+        merge(played_notes, 128, 90, "background-color: " +colors[0]+";");
 
-        for(var i = 1; i < data.length; i++) {
-            var y = new Array(notes.length);
+    }
+}
 
-            for(var j = 0; j < y.length; j++) {
-                y[j] = data[i][notes[j]];
+function updateTempo() {
+    tempo = document.getElementById("tempo").value;
+    //loop through and update each duration!
+    duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
+
+    var temp_notes = notes;
+    var table = document.getElementById('table');
+
+
+    for (var i = 0; i < notes.length; i++) {
+        for(var j = 0; j < columns.length; j++){
+            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
+            var whichClass = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString() + "_q";
+
+            //var x = document.getElementById(whichId);
+            var x_class = document.getElementById(whichId).className;
+            var x = document.getElementsByClassName(whichClass);
+
+            if(x.length > 0 && x_class != '') {
+                var dur_flag = x_class.split('_')[2];
+                for ( var k = 0; k < x.length; x++) {
+                    x[k].setAttribute("data-duration", duration_dict[dur_flag]);
+                }
+
             }
-            addFile(y, colors[i]);
+
         }
     }
+
 }
 </script>
 
@@ -581,16 +811,18 @@ function updateTimeMeasure() {
 
 
 <body>
-<div id = "form">
-    Time Measure: <input type='text' id='time_measure' placeholder='4/4'>
+<div id = "form-init">
+    Time Signature:
+    <input type='checkbox' id='time_measure_4/4'> 4/4
+     <input type='checkbox' id='time_measure_3/4'> 3/4
+     <input type='checkbox' id='time_measure_2/4'> 2/4
     <button onclick="updateTimeMeasure()">Update</button>
-    Tempo: <input type='text' id='tempo' placeholder='128'>
-    <button onclick="">Update</button>
+    <br>
+    Tempo: <input type='text' id='tempo' placeholder='(fast)1-500(slow)'>
+    <button onclick="updateTempo()">Update</button>
 
 
 </div>
-<div id = "edit-note"></div>
-<div id = "table-drag"> </div>
 <div class = "centerButtons">
     <button onclick="playTable()">Play</button>
     <button onclick="stopPlayer()">Stop</button>
@@ -598,6 +830,11 @@ function updateTimeMeasure() {
     <button onclick="location.href = '{{url_for('library')}}';">Library</button>
 
 </div>
+<div id = "table-drag"> </div>
+
+<p id="msg_id"></p>
+<div id = "edit-note"></div>
+
 <br>
 <div id="menu" style="visibility:hidden">
             <ul>
