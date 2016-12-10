@@ -62,7 +62,7 @@ window.onload = function () {
             x[i] = data[0][notes[i]];
         }
         var played_notes = makeTableHTML(x);
-        merge(played_notes, 128, 90, tmp = "background-color: " +colors[0]+";");
+        merge(played_notes, duration_dict['q'], 90, tmp = "background-color: " +colors[0]+";");
         for(var i = 1; i < data.length; i++) {
             var y = new Array(notes.length);
 
@@ -70,7 +70,7 @@ window.onload = function () {
                 y[j] = data[i][notes[j]];
             }
             var n = addFile(y);
-            merge(n, 128, 90, "background-color: " +colors[i]+";");
+            merge(n, duration_dict['q'], 90, "background-color: " +colors[i]+";");
 
         }
 
@@ -127,8 +127,8 @@ function createTracks() {
                 var volume = x[0].getAttribute("data-volume");
                 var note = {key: key, duration: duration, volume: volume, clock: c};
                 temp.push(note);
-                j = j + num_squares[duration_flag];
-                 c += duration_dict['s']*num_squares[duration_flag]
+                j = j + num_squares[duration_flag] - 1;
+                 c += duration_dict['s'] *(num_squares[duration_flag] );
             }
             //PAUSE
             else {
@@ -601,7 +601,9 @@ function clickAndDrop(e) {
         end = '';
     }
 }
+function addBeat() {
 
+}
 function updateTimeMeasure() {
     var num_beats = columns.length;
     //var measure = (document.getElementById("time_measure").value).split("/");
@@ -654,13 +656,14 @@ function updateTimeMeasure() {
         }
         makeTableHTML(x, colors[0]);
         alert(Array.from(played_notes));
-        merge(played_notes, 128, 90, "background-color: " +colors[0]+";");
+        merge(played_notes, duration_dict['q'], 90, "background-color: " +colors[0]+";");
 
     }
 }
 
 function updateTempo() {
     tempo = document.getElementById("tempo").value;
+    alert(tempo);
     //loop through and update each duration!
     duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
 

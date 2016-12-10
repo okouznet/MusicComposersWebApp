@@ -133,7 +133,6 @@
         var music = {{ music|tojson }};
 
         queue = music[id];
-        //queue.shift();
         var chord = queue[0];
         for (var i = 0; i < chord.length; i++) {
             var x = id_to_note[chord[i] % 12];
