@@ -112,7 +112,7 @@ class PianoPlayer :
     def getNotes(self):
         temp = self.notes
         temp.reverse()
-        return temp
+        return temp[0:len(temp) -11 - 1]
 
     def make_queue(self, filename):
         file = midi_file_in.MIDI_to_Composition(filename)

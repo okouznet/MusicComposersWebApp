@@ -395,7 +395,10 @@ function editNote(whichId){
     form += "Duration: ";
     for (var i = 0; i < notes_duration.length; i++) {
         var dur_id = 'form_duration_' + notes_duration[i];
-        form += "<input type='checkbox' id='"+dur_id+"'>" + notes_duration_names[i];
+        form += "<input type='checkbox' id='"+dur_id+"'>";// + notes_duration_names[i];
+        form += "<button type='button' style='background-color: black;' onclick='checkBox(\"" + dur_id + "\")'>"
+        form += notes_duration_names[i];
+        form += "</button>";
     }
     //'" + notes_duration[i] + "
 
@@ -404,9 +407,9 @@ function editNote(whichId){
     form += " Volume: <input type='text' id='form_volume' placeholder='1-200'> ";
     form += "<br><br>";
 
-    form += "<button onclick='updateNote(\"" + whichId + "\")'>" + "Submit" + "</button>   ";
-    form += "<button onclick='deleteNote1(\"" + whichId + "\")'>" + "Delete" + "</button>";
-    form += "<button onclick='addNote(\"" + whichId + "\")'>" + "Add" + "</button>";
+    form += "<button style='background-color: cornflowerblue;' onclick='updateNote(\"" + whichId + "\")'>" + "Update" + "</button>   ";
+    form += "<button style='background-color: cornflowerblue;' onclick='deleteNote1(\"" + whichId + "\")'>" + "Delete" + "</button>";
+    //form += "<button style='background-color: cornflowerblue;' onclick='addNote(\"" + whichId + "\")'>" + "Add" + "</button>";
     form += "</div>";
 
     $('#edit-note').html(form);
@@ -481,6 +484,9 @@ function updateNote(whichId) {
 
         }
         merge(note_set, new_duration, volume, cssText);
+    }
+    else {
+        addNote(whichId);
     }
 }
 
@@ -669,6 +675,15 @@ function updateTempo() {
     }
 
 }
+
+function checkBox(checkboxId){
+    if(document.getElementById(checkboxId).checked){
+        document.getElementById(checkboxId).checked = false;
+    }
+    else{
+        document.getElementById(checkboxId).checked = true;
+    }
+}
 </script>
 
 <header>
@@ -687,16 +702,16 @@ function updateTempo() {
 <body>
 <div id = "form-init">
     Tempo: <input type='text' id='tempo' placeholder='40-150'>
-    <button onclick="updateTempo()">Update</button>
-    <button onclick="addBeat()">Add Beat</button>
+    <button style='background-color: cornflowerblue;' onclick="updateTempo()">Update</button>
+    <button style='background-color: cornflowerblue;' onclick="addBeat()">Add Beat</button>
 
 
 </div>
 <div class = "centerButtons">
-    <button onclick="playTable()">Play</button>
-    <button onclick="stopPlayer()">Stop</button>
-    <button onclick="saveFile()">Save</button>
-    <button onclick="exportFile()">Export</button>
+    <button style='background-color: cornflowerblue;' onclick="playTable()">Play</button>
+    <button style='background-color: cornflowerblue;' onclick="stopPlayer()">Stop</button>
+    <button style='background-color: cornflowerblue;' onclick="saveFile()">Save</button>
+    <button style='background-color: cornflowerblue;' onclick="exportFile()">Export</button>
 
 </div>
 <div id = "table-drag"> </div>

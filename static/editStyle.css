@@ -109,7 +109,7 @@ div#table-drag td{
 .button {
 	margin: 2%;
 	background-color: #6A93D4;
-	color: white; 
+	color: white;
 	border-width: 1px;
 	width: 5%;
 	padding: 0px;
@@ -120,10 +120,9 @@ div#table-drag td{
     /*float: center;*/
 }
 button {
-    background-color: cornflowerblue;
     border: none;
     color: white;
-    padding: 10px 20px;
+    padding: 6px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
