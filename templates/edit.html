@@ -605,7 +605,6 @@ function editNoteHelper(e) {
 
 function addBeat() {
     var new_column = (1/(numerator*denominator)) * columns.length;
-
     //var table = document.getElementById("table");
     //var rows = table.rows;
 
@@ -619,12 +618,12 @@ function addBeat() {
     var trgroup = document.getElementById("tr_class");
     var thgroup = document.createElement("th");
     if ((new_column % 1 ) != 0) {
-        thgroup.className = "table-header";
-    }
-    else {
         thgroup.className = "table-header-inv";
     }
-    thgroup.innerHTML = Math.floor(columns[columns.length - 1]);
+    else {
+        thgroup.className = "table-header";
+    }
+    thgroup.innerHTML = Math.floor(new_column);
     trgroup.appendChild(thgroup);
     columns.push(new_column);
 
