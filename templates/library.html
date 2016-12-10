@@ -95,8 +95,13 @@
     }
 </script>
 <header>
-    <div class="header1">
-      <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a>
+     <div class="header1">
+        <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a> <br><br>
+        <a class = "header2"  href="{{url_for('play')}}">Play</a>
+        <a class = "header2"  href="{{url_for('compose')}}">Compose</a>
+         <a class = "header2"  href="{{url_for('edit')}}">Editor</a>
+        <a class = "header2"  href="{{url_for('settings')}}">Settings</a>
+        <br>
         <br>
     </div>
 </header>

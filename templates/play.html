@@ -71,7 +71,9 @@
 		    }
 	    });
     };
-
+    function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+    }
     function clickDown(e) {
         if (e.target !== e.currentTarget) {
             var id = e.target.id;
@@ -205,9 +207,10 @@
     }
 
     var keys = {};
+    var full_chord = [];
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
         66:7, 72:8, 78:9, 74:10, 77:11};
-
+    var keyup = 1;
 
     document.onkeydown = function (event) {
         var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
@@ -266,14 +269,13 @@
             }
         }
         else {
-            var notes = [];
             for (var i in keys) {
-                notes.push(note_map[i]);
-                if(id_convert[i] != null) {
+                full_chord.push(note_map[i]);
+                 if(id_convert[i] != null) {
                     document.getElementById(id_convert[i]).style.background = "cornflowerblue";
                 }
             }
-            PlayNote(notes);
+            PlayNote(full_chord);
         }
         }
 
@@ -291,6 +293,8 @@
               }
           }
         }
+        keyup = 0;
+         full_chord = [];
         delete keys[event.which];
     };
     //event handlers
@@ -298,12 +302,17 @@
 </script>
 <header>
     <div class="header1">
-      <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a>
+        <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a> <br><br>
+        <a class = "header2"  href="{{url_for('compose')}}">Compose</a>
+        <a class = "header2"  href="{{url_for('library')}}">Music Library</a>
+        <a class = "header2"  href="{{url_for('edit')}}">Editor</a>
+        <a class = "header2"  href="{{url_for('settings')}}">Settings</a>
         <br>
         <br>
     </div>
 </header>
 <body>
+
     <br><br><br>
     <p id="oct"></p>
     <div class = "centerButtons">

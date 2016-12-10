@@ -301,7 +301,13 @@
 </script>
 <header>
     <div class="header1">
-      <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a>
+        <a class="header" id="nav_home" href="{{url_for('homepage')}}">MUSIC COMPOSER</a> <br><br>
+        <a class = "header2"  href="{{url_for('play')}}">Play</a>
+        <a class = "header2"  href="{{url_for('library')}}">Music Library</a>
+        <a class = "header2"  href="{{url_for('edit')}}">Editor</a>
+        <a class = "header2"  href="{{url_for('settings')}}">Settings</a>
+        <br>
+        <br>
     </div>
     <br><br>
 </header>
@@ -349,8 +355,6 @@
         <button onclick="PlayTrack()">Playback</button>
         <button onclick="DiscardTrack()">Discard</button>
         <button onclick="SaveTrack()">Save</button>
-
-        <button onclick="location.href = '{{url_for('library')}}';">Library</button>
     </div>
 
 </body>
