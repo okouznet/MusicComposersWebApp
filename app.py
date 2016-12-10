@@ -51,8 +51,13 @@ def compose():
 @app.route('/play', methods=['GET','POST'])
 def play():
     #music = piano.make_queue(filename="/Users/alefevre/Documents/UndergraduateCourses/EECS481/MusicComposersWebApp/static/playback/for_elise_by_beethoven.mid")
-    music = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
-    print music
+    chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
+    piano.clearTrack()
+    furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
+    piano.clearTrack()
+    moonlight = piano.make_queue(filename="static/playback/moonlight_sonata.mid")
+    piano.clearTrack()
+    music = [furelise, chopin, moonlight]
     if request.method == 'POST':
         return render_template('play.html')
     else:
@@ -90,16 +95,18 @@ def edit():
     else:
         data = request.get_json(silent=True)
         if data is not None:
-            notes = data['note']
-            for x in notes:
+            tracks = []
+            container = data['container']
+            for x in container:
                 n = []
                 for i in x:
-                    n.append(str(i))
-                piano.addTrack(notes=n)
-            filename = str(data['file'])
-            print filename
-            piano.saveTrack(filename=filename)
-            piano.clearTrack()
+                    #n.append(str(i))
+                    print i
+               # piano.addTrack(notes=n)
+            #filename = str(data['file'])
+            #print filename
+            #piano.saveTrack(filename=filename)
+            #piano.clearTrack()
         dir = "static/library/"
         info = request.form
         files = []

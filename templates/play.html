@@ -123,12 +123,16 @@
     queue = [];
     play_song = 0;
     song = '';
-    function startPlayAlong() {
+
+
+
+    function startPlayAlong(id) {
         //reset play along
         stopPlayAlong();
         play_song = 1;
-        var moonlight = {{ moonlight|tojson }}
-        queue = moonlight;
+        var music = {{ music|tojson }};
+
+        queue = music[id];
         //queue.shift();
         var chord = queue[0];
         for (var i = 0; i < chord.length; i++) {
@@ -339,8 +343,11 @@
     </ul>
     </div>
     <div class = "centerButtons">
-         <button onclick="startPlayAlong()">Play Along</button>
-        <button onclick="stopPlayAlong()">Stop Play Along</button>
+         <button onclick="startPlayAlong(2)">Moonlight Sonata (Beethoven)</button>
+         <button onclick="startPlayAlong(1)">Fantasie Impromptu (Chopin)</button>
+         <button onclick="startPlayAlong(0)">Fur Elise (Beethoven)</button>
+         <button onclick="stopPlayAlong()">Stop Play Along</button>
+
     </div>
 
 </body>

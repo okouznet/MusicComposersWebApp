@@ -30,6 +30,10 @@ class PianoPlayer :
                 mingus_notes.append(x)
         self.track.add_notes(mingus_notes, duration=duration)
 
+    def addComposition(self):
+        c = Composition()
+
+        return
 
     def playTrack(self, notes, duration=None):
         t = Track(Piano())
@@ -38,6 +42,10 @@ class PianoPlayer :
 
     def clearTrack(self):
         self.track = Track(Piano())
+        self.matrix = {}
+        for n in self.notes:
+            i = int(n)
+            self.matrix[i] = [0] * 10
 
     def saveTrack(self, filename):
         t = self.track
@@ -72,12 +80,10 @@ class PianoPlayer :
                 if(info[0] == 0):
                     i = i + 1
                 count.append(info[0] + i)
-                print info[0] + i
         #normalize count array
         count_total = []
         for i in range(0, len(count)*4):
             count_total.append(0.0625 * i)
-        print count_total
         matrix = self.midi_matrix(track=file[0][0], total_count=len(count_total))
         count.pop()
         return (matrix, count_total)
@@ -98,7 +104,6 @@ class PianoPlayer :
                     x[count*4] = 1
                     matrix[i] = x
                 count = count + 1
-        print matrix
         return matrix
 
     def getMatrix(self):
@@ -126,4 +131,4 @@ class PianoPlayer :
 
 if __name__ == "__main__":
     p = PianoPlayer()
-    p.add_file(filename="/Users/alefevre/Documents/Courses/EECS481/MusicComposersWebApp/static/library/part1.mid")
+    music = p.make_queue(filename="static/playback/chopin_fantasie_imp.mid")

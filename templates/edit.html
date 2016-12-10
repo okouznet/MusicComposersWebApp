@@ -99,9 +99,8 @@ window.onload = function () {
     });
 };
 
-
-function playTable() {
-    //create tracks
+function createTracks() {
+     //create tracks
     var tracks = [];
     alert("check1");
     var container = []; //go through table and push notes to container
@@ -144,8 +143,10 @@ function playTable() {
         }
 
     }
+    return container;
+}
 
-    //create midi file
+function createSong(container) {
     var mf = new JZZ_.MidiFile(1,tempo);
 
     //create tracks! :
@@ -169,13 +170,58 @@ function playTable() {
     //create file
     var str = mf.dump(); // MIDI file dumped as a string
     var b64 = JZZ_.MidiFile.toBase64(str); // convert to base-64 string
+    return b64;
+}
+function playTable() {
+
+    var container = createTracks();
+    var b64 = createSong(container);
     var file = 'data:audio/midi;base64,' + b64; // data URI
+
+    //create midi file
+
     MIDI.Player.loadFile(file, MIDI.Player.start);
     MIDI.Player.start();
 
 
 }
 
+function exportFile() {
+    var filename = prompt("Please enter file name", "file name");
+    var container = createTracks();
+    var b64 = createSong(container);
+    var song = 'data:audio/midi;base64,' + b64; // data URI
+
+
+    var link = document.createElement('a');
+    if (typeof link.download === 'string') {
+        document.body.appendChild(link); // Firefox requires the link to be in the body
+        link.download = filename;
+        link.href = song;
+        link.click();
+        document.body.removeChild(link); // remove the link when done
+    } else {
+        location.replace(song);
+    }
+}
+
+function saveFile() {
+    var filename = prompt("Please enter file name", "file name");
+    var container = createTracks(); //creates midi file to be sent back to library
+    $.ajax({
+        url: '/edit',
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({container: container, file: filename}),
+        type: 'POST',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
 function stopPlayer(){
     MIDI.Player.stop();
 }
@@ -367,62 +413,6 @@ function editNote(whichId){
 
 }
 
-function saveFile() {
-    var filename = prompt("Please enter file name", "file name");
-
-    //save track in container!
-     //gets table
-    var temp_notes = notes;
-    var table = document.getElementById('table');
-    var container = new Array(table.rows.item(0).cells.length); //go through table and push notes to container
-    //loops through rows - index 1 to skip headers
-    for (var i = 0; i < table.rows.item(0).cells.length; i++) {
-        container[i] = [];
-    }
-    for (var i = 0; i < notes.length; i++) {
-        //var cells = table.rows.item(i).cells;
-        var pause = 1;
-        for(var j = 0; j < columns.length; j++){
-            var whichId = MIDI.noteToKey[notes[i]] + "_" + columns[j].toString();
-
-
-            var x = document.getElementById(whichId).className;
-            if (x != '') {
-                var class_id = document.getElementsByClassName(x);
-                var key = class_id[0].getAttribute("data-key");
-                if (key.length == 2) {
-                    key = key[0] + '-' + key[1];
-                }
-                else if (key.length == 3) {
-                    key = key[0] + key[1] + '-' + key[2];
-                }
-
-                var n = container[j];
-                n.push(key);
-                container[j] = n;
-
-            }
-        }
-    }
-    //code to send song back to library
-    $.ajax({
-        url: '/edit',
-        dataType : "json",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({note: container, file: filename}),
-
-        type: 'POST',
-        success: function (response) {
-            console.log(response);
-        },
-
-        error: function (error) {
-            console.log(error);
-        }
-    });
-
-
-}
 
 // delete function
 function deleteNote(whichId) {
@@ -725,7 +715,8 @@ function updateTempo() {
 <div class = "centerButtons">
     <button onclick="playTable()">Play</button>
     <button onclick="stopPlayer()">Stop</button>
-    <button onclick="saveFile()">Export</button>
+    <button onclick="saveFile()">Save</button>
+    <button onclick="exportFile()">Export</button>
     <button onclick="location.href = '{{url_for('library')}}';">Library</button>
 
 </div>
