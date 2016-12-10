@@ -110,7 +110,9 @@ class PianoPlayer :
         return self.matrix
 
     def getNotes(self):
-        return self.notes
+        temp = self.notes
+        temp.reverse()
+        return temp
 
     def make_queue(self, filename):
         file = midi_file_in.MIDI_to_Composition(filename)
@@ -131,4 +133,5 @@ class PianoPlayer :
 
 if __name__ == "__main__":
     p = PianoPlayer()
-    music = p.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
+    notes = p.getNotes()
+    print notes

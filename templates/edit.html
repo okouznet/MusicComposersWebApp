@@ -47,6 +47,7 @@ velocity = 127; //BUG IN FILE
 numerator = 4;
 denominator = 4;
 duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
+duration_name = {'w': 'Whole', 'h': 'Half', 'q': 'Quarter', 'e': 'Eighth', 's': 'Sixteenth'};
 num_squares = {'w': 4 * 4, 'h': 4 * 2, 'q': 4, 'e': 4/2, 's': 4/4};
 
 window.onload = function () {
@@ -119,7 +120,6 @@ function createTracks() {
             var x = document.getElementsByClassName(whichClass);
             //var temp = [];
             if(x.length > 0)  { //create note and push it to container
-                //alert(whichClass);
                 var duration_flag = whichClass.split("_")[2];
 
                 var key = x[0].getAttribute("data-key");
@@ -234,12 +234,13 @@ function showData(e) {
         var key = x[0].getAttribute("data-key");
         var volume = x[0].getAttribute("data-volume");
         var duration = x[0].getAttribute("data-duration");
+        var duration_flag = target_class.split('_')[2];
 
         var result = "Key: " + key;
         //result += "<br>";
         result += "  Volume: " + volume;
         //result += "<br>";
-        result += "  Duration: " + duration;
+        result += "  Duration: " + duration_name[duration_flag];
         //result += "<br>";
         target_p.style.cssText = "text-align: center; color: white;background-color: black;font-weight: bold;";
         target_p.innerHTML = result;
@@ -254,7 +255,6 @@ function hideData(e) {
 function makeTableHTML(myArray) {
     var played_notes = new Set();
     var width = columns.length * 5;
-    alert(columns);
     var result = "<table id='table' style='width: "+width +"%;'>";
 
     result += "<colgroup id = 'colgroup'>";
@@ -287,6 +287,7 @@ function makeTableHTML(myArray) {
 
     var tempArray = myArray;
     for(var i=0; i<tempArray.length; i++) {
+        result += "<tr id = "+ MIDI.noteToKey[notes[i]] + ">";
         result += "<td class = 'table-header' >" + MIDI.noteToKey[notes[i]] + "</td>";
         var quarter = 0;
         var prev_note = '';
@@ -322,7 +323,7 @@ function makeTableHTML(myArray) {
         }
         result += "</tr>";
     }
-    result += "</table>";
+    result += "</tbody></table>";
 
     document.getElementById("table-drag").innerHTML = result
     return played_notes;
@@ -334,7 +335,6 @@ function merge(notes, dur, vol, color) {
     for(var i = 0; i < temp.length; i++) {
         var note = temp[i].split('_')[0];
         var table_cell = document.getElementsByClassName(temp[i]);
-        dur = duration_dict[temp[i].split('_')[2]]; //CLEAN UP
         for (var j = 0; j < table_cell.length; j++) {
             if (j >= columns.length) {
                 break;
@@ -390,7 +390,7 @@ function editNote(whichId){
 
     var form = "<div id = 'form'>";
     var notes_duration = ['w', 'h', 'q', 'e', 's'];
-    var notes_duration_names = ["Whole", "Half", "Quarter", "Eigth", "Sixteenth"];
+    var notes_duration_names = ["Whole", "Half", "Quarter", "Eighth", "Sixteenth"];
 
     form += "Duration: ";
     for (var i = 0; i < notes_duration.length; i++) {
@@ -501,7 +501,6 @@ function addNote(whichId) {
             break;
         }
     }
-    //alert(duration);
     var whichClass = whichId + "_" + duration_flag;
 
     var volume = document.getElementById("form_volume").value;
@@ -553,17 +552,19 @@ function clickAndDrop(e) {
         if(start != '') {
             end = e.target.id;
             if (start != end) {
-                var end_class_name = end + "_q";
-                var notes = new Set();
-                notes.add(end_class_name);
+
 
                 var start_cells = document.getElementsByClassName(start_class);
+                var duration_flag = start_class.split('_')[2];
                 var duration = start_cells[0].getAttribute("data-duration");
                 var volume = start_cells[0].getAttribute("data-volume");
                 var start_ids = [];
                 var end_ids = [];
                 var cssText = start_cells[0].style.cssText;
 
+                var end_class_name = end + '_' + duration_flag;
+                var notes = new Set();
+                notes.add(end_class_name);
                 var start_cells_length = start_cells.length;
                 for (var i = 0; i < start_cells_length; i++) {
                     start_ids.push(start_cells[i].id);
@@ -571,6 +572,7 @@ function clickAndDrop(e) {
                 for (var i = 0; i < start_cells_length; i++) {
                     deleteNote(start_ids[i]);
                 }
+
                 for (var i = 0; i < start_cells_length; i++) {
                     var column = parseFloat(end.split('_')[1]) + ((1/(numerator * denominator))*i);
                     if (columns.indexOf(column) == -1)
@@ -588,51 +590,57 @@ function clickAndDrop(e) {
         end = '';
     }
 }
+function editNoteHelper(e) {
+    var id = e.target.id;
+    if (id != '') {
+        editNote(id);
+    }
+}
+
 function addBeat() {
     var new_column = (1/(numerator*denominator)) * columns.length;
 
+    //var table = document.getElementById("table");
+    //var rows = table.rows;
 
-    var colwidth = (5 * columns.length) / (columns.length+1);
-    alert(9);
+    var colwidth = (5 * columns.length) / (columns.length);
+    var colgroup = document.getElementById("colgroup");
+    var new_colgroup = document.createElement("colgroup");
+    new_colgroup.className = "col-" + columns.length.toString();
+    new_colgroup.style.width = colwidth;
+    colgroup.appendChild(new_colgroup);
+
+    var trgroup = document.getElementById("tr_class");
+    var thgroup = document.createElement("th");
+    if ((new_column % 1 ) != 0) {
+        thgroup.className = "table-header";
+    }
+    else {
+        thgroup.className = "table-header-inv";
+    }
+    thgroup.innerHTML = Math.floor(columns[columns.length - 1]);
+    trgroup.appendChild(thgroup);
     columns.push(new_column);
-    var table = document.getElementById("table");
-    var rows = table.rows;
-    var length = rows[0].cells.length;
-    rows[0].insertCell(length);
-    /*
 
-    for (var i = 0; i < rows.length; i++) {
-        for (var j = 0; j < numerator; j++) {
-            var length = rows[i].cells.length;
-            rows[i].insertCell(length);
-            var div = rows[i].cells[length];
-            var whichId = rows[i].cells[0].innerHTML + '_' + new_column.toString();
+    for (var i = 0; i < notes.length; i++) {
+        var row = document.getElementById(MIDI.noteToKey[notes[i]]);
+        var new_cell = document.createElement("td");
+        var whichId = MIDI.noteToKey[notes[i]] + '_' + new_column.toString();
+        new_cell.setAttribute('id',whichId);
+        new_cell.addEventListener('click', clickAndDrop, false);
+        new_cell.addEventListener('touchstart', clickAndDrop, false);
+        new_cell.addEventListener('dblclick', editNoteHelper , false); //BUG
+        row.appendChild(new_cell);
 
-            div.id = whichId;
-            div.addEventListener('click', clickAndDrop, false);
-            div.addEventListener('touchstart', clickAndDrop, false);
-            div.addEventListener('dblclick', editNote(whichId) , false);
-        }
     }
-    for (var i = 0; i < (numerator); i++) {
-        var length = rows[0].cells.length;
-        var extra = rows[0].cells[length-1];
-        extra.id = 'colgroup';
-        extra.className = 'col-' + length;
-        extra.style.width = '5%';
+}
 
-        var tr_class= document.getElementById("tr_class");
-        var result =  "<th class = 'table-header-inv'>"+ Math.floor(columns[i])+"</th>";
-        tr_class.innerHTML = tr_class.innerHTML + result;
-    }
-    */
-    //var extra = rows[0].cells[rows[0].cells.length-1];
-    //var new_object = document.createElement();
+function removeBeat() {
+
 }
 
 function updateTempo() {
     tempo = document.getElementById("tempo").value;
-    alert(tempo);
     //loop through and update each duration!
     duration_dict = {'w': tempo*4, 'h': tempo*2, 'q': tempo, 'e': tempo/2, 's': tempo/4};
 
