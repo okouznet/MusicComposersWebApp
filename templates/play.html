@@ -220,11 +220,10 @@
     };
     var keys = {};
     var full_chord = [];
-    var prev_keys = {};
 
+    current_pressed_key = 0;
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
         66:7, 72:8, 78:9, 74:10, 77:11};
-    var keyup = 1;
 
     document.onkeydown = function (event) {
         var note_map = { 90:12*octave, 83:12*octave+1, 88:12*octave+2, 68:12*octave+3, 67:12*octave+4,
@@ -232,6 +231,7 @@
             74:12*octave+10, 77:12*octave+11 };
 
         keys[event.which] = true;
+        pressed_key = event.which;
 
         if (87 in keys) {
             LowOctave();
@@ -291,14 +291,9 @@
 
 
             }
-            var A = Object.keys(keys);
-            var B = Object.keys(prev_keys);
-            var diff = A.filter(function(x) { return B.indexOf(x) < 0 });
-            var test = A.toString() + ' ' + B.toString();
-            //alert(diff);
-            if (diff.length != 0) {
+            if (pressed_key != current_pressed_key) {
                 PlayNote(full_chord);
-                prev_keys = keys;
+                current_pressed_key = pressed_key;
             }
         }
         }
@@ -314,10 +309,8 @@
             }
         }
 
-        keyup = 0;
         full_chord = [];
-
-        prev_keys= {};
+        current_pressed_key = 0;
         delete keys[event.which];
     };
     //event handlers

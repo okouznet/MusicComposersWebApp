@@ -1,11 +1,5 @@
 from flask import *
 import PianoPlayer
-from mingus.containers import Track
-from mingus.containers import Composition
-from mingus.containers import Bar
-
-from mingus.containers import Note
-
 import os
 
 app = Flask(__name__)
@@ -57,13 +51,13 @@ def compose():
 @app.route('/play', methods=['GET','POST'])
 def play():
     #music = piano.make_queue(filename="/Users/alefevre/Documents/UndergraduateCourses/EECS481/MusicComposersWebApp/static/playback/for_elise_by_beethoven.mid")
-    chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid", save=1)
+    chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
     piano.clearTrack()
-    furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid", save=1)
+    furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
     piano.clearTrack()
-    moonlight = piano.make_queue(filename="static/playback/moonlight_sonata.mid", save=1)
+    moonlight = piano.make_queue(filename="static/playback/moonlight_sonata.mid")
     piano.clearTrack()
-    music = [furelise[0], chopin[0], moonlight[0]]
+    music = [furelise, chopin, moonlight]
     if request.method == 'POST':
         return render_template('play.html')
     else:
@@ -100,15 +94,13 @@ def edit():
         return render_template('edit.html', **options)
     else:
         data = request.get_json(silent=True)
-        #save composition to library
         if data is not None:
             composition = data['container']
             tempo = data['tempo']
             length = data['length']
-            c = piano.get_composition(composition, tempo, length)
+            track = piano.get_composition(composition, tempo, length)
             filename = str(data['file'])
-            piano.saveComposition(filename, c)
-
+            piano.saveComposition(filename=filename, track=track)
         dir = "static/library/"
         info = request.form
         files = []

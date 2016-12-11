@@ -62,6 +62,7 @@ window.onload = function () {
         for (var i = 0; i < x.length; i++) {
             x[i] = data[0][notes[i]];
         }
+
         var played_notes = makeTableHTML(x);
         merge(played_notes, duration_dict['q'],  tmp = "background-color: " +colors[0]+";");
         for(var i = 1; i < data.length; i++) {
@@ -77,10 +78,12 @@ window.onload = function () {
 
     }
     else {
+
         columns = [];
         for (var i = 0; i < 32; i++) {
             columns.push(i * (1/(numerator * denominator)))
         }
+
         var x = new Array(notes.length);
         //initialize Array
         for (var i = 0; i < x.length; i++) {
@@ -107,7 +110,6 @@ function createTracks() {
     var container = []; //go through table and push notes to container
     for (var i = 0; i < notes.length; i++)  {
         var temp = [];
-        var temp_clock = []
         var c = duration_dict['s'];
         //var j = 0;
         //while (j < columns.length) {
@@ -588,7 +590,6 @@ function editNoteHelper(e) {
 
 function addBeat() {
     var new_column = (1/(numerator*denominator)) * columns.length;
-    alert(new_column);
     //var table = document.getElementById("table");
     //var rows = table.rows;
 
