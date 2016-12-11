@@ -297,15 +297,15 @@ function makeTableHTML(myArray) {
             if(tempArray[i][j]== 1) {
                 note_class = whichId + "_q";
                 played_notes.add(note_class);
-                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
+                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='touchstart(event)' " +
+                        "ontouchend='touchend(event)' ondblclick='editNote(\"" + whichId + "\")'></td>";
                 //remove zeros due to colspan
                 quarter += 1;
                 prev_note = MIDI.noteToKey[notes[i]];
                 //if (j < tempArray[i].length)
             } else if (quarter != 0) {
-                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
+                result += "<td id = " + whichId +" class="+note_class+"  onclick='clickAndDrop(event)' ontouchstart='touchstart(event)' " +
+                        "ontouchend='touchend(event)' ondblclick='editNote(\"" + whichId + "\")'></td>";
                 quarter += 1;
                 if (quarter == denominator) {
                     //merge previous cells
@@ -314,8 +314,8 @@ function makeTableHTML(myArray) {
             }
             else {
 
-                result += "<td id = " + whichId +" style='' onclick='clickAndDrop(event)' ontouchstart='clickAndDrop(event)' " +
-                        "ondblclick='editNote(\"" + whichId + "\")'></td>";
+                result += "<td id = " + whichId +" style='' onclick='clickAndDrop(event)' ontouchstart='touchstart(event)' " +
+                        "ontouchend='touchend(event)' ondblclick='editNote(\"" + whichId + "\")'></td>";
 
             }
 
@@ -414,6 +414,21 @@ function editNote(whichId){
 
 }
 
+var startTime, endTime;
+
+function touchstart(e) {
+    startTime = new Date().getTime();
+}
+
+function touchend(e) {
+    endTime = new Date().getTime();
+    var id = e.target.id;
+    //stops short touches from firing the event
+    if( (endTime-startTime)/1000 > 2)
+        if (id != '')
+            editNote(id);
+
+}
 
 // delete function
 function deleteNote(whichId) {
@@ -618,7 +633,7 @@ function addBeat() {
         var whichId = MIDI.noteToKey[notes[i]] + '_' + new_column.toString();
         new_cell.setAttribute('id',whichId);
         new_cell.addEventListener('click', clickAndDrop, false);
-        new_cell.addEventListener('touchstart', clickAndDrop, false);
+        //new_cell.addEventListener('touchstart', clickAndDrop, false);
         new_cell.addEventListener('dblclick', editNoteHelper , false); //BUG
         row.appendChild(new_cell);
 

@@ -50,7 +50,6 @@ def compose():
 #play page
 @app.route('/play', methods=['GET','POST'])
 def play():
-    #music = piano.make_queue(filename="/Users/alefevre/Documents/UndergraduateCourses/EECS481/MusicComposersWebApp/static/playback/for_elise_by_beethoven.mid")
     chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
     piano.clearTrack()
     furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
@@ -77,7 +76,7 @@ def play():
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
     dir_name = os.path.dirname(os.path.realpath(__file__)) + "/static/library"
-    notes = piano.getNotes()
+    notes = piano.getNotes() # get all possible notes C1 to C8
     if (request.method == 'GET'):
         # This code will change as get requests added
         matrix = {}
@@ -94,18 +93,24 @@ def edit():
         return render_template('edit.html', **options)
     else:
         data = request.get_json(silent=True)
-        if data is not None:
-            composition = data['container']
-            tempo = data['tempo']
-            length = data['length']
+        if data is not None: # if form sent from edit.html
+            composition = data['container'] # matrix of notes played
+            tempo = data['tempo'] #tempo of piece
+            length = data['length'] #how many beats in piece
+
+            #parse the composition
             track = piano.get_composition(composition, tempo, length)
             filename = str(data['file'])
+
+            #save composition to library
             piano.saveComposition(filename=filename, track=track)
         dir = "static/library/"
         info = request.form
         files = []
         data = []
         x = []
+
+        #add all selected files from library to matrix
         for v in info:
             files.append(request.form[v])
             results = piano.add_file(filename=dir + v)

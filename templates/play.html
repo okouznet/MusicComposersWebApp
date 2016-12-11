@@ -112,7 +112,6 @@
         MIDI.chordOff(0, note, delay + 0.75);
     }
     function LowOctave() {
-        //BUG: sometimes if JS lags, doesn't change octave right away
        if(octave >= 3){
            octave = octave - 1;
        }
@@ -120,7 +119,6 @@
     }
 
     function HighOctave() {
-       //BUG: sometimes if JS lags, doesn't change octave right away
        if(octave <= 7){
            octave = octave +1;
        }
@@ -210,14 +208,7 @@
             PlayNote(notes);
         }
     }
-
-    Set.prototype.difference = function(setB) {
-        var difference = new Set(this);
-        for (var elem of setB) {
-            difference.delete(elem);
-        }
-        return difference;
-    };
+    
     var keys = {};
     var full_chord = [];
 
