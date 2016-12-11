@@ -63,7 +63,7 @@ window.onload = function () {
             x[i] = data[0][notes[i]];
         }
         var played_notes = makeTableHTML(x);
-        merge(played_notes, duration_dict['q'], 90, tmp = "background-color: " +colors[0]+";");
+        merge(played_notes, duration_dict['q'],  tmp = "background-color: " +colors[0]+";");
         for(var i = 1; i < data.length; i++) {
             var y = new Array(notes.length);
 
@@ -71,7 +71,7 @@ window.onload = function () {
                 y[j] = data[i][notes[j]];
             }
             var n = addFile(y);
-            merge(n, duration_dict['q'], 90, "background-color: " +colors[i]+";");
+            merge(n, duration_dict['q'], "background-color: " +colors[i]+";");
 
         }
 
@@ -124,8 +124,7 @@ function createTracks() {
 
                 var key = x[0].getAttribute("data-key");
                 var duration = x[0].getAttribute("data-duration");
-                var volume = x[0].getAttribute("data-volume");
-                var note = {key: key, duration: duration, volume: volume, clock: c};
+                var note = {key: key, duration: duration, clock: c};
                 temp.push(note);
                 j = j + num_squares[duration_flag] - 1;
                  c += duration_dict['s'] *(num_squares[duration_flag] );
@@ -212,7 +211,8 @@ function saveFile() {
         url: '/edit',
         dataType : "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({container: container, file: filename}),
+        data: JSON.stringify({container: container, file: filename, tempo: tempo,
+            length: columns.length}),
         type: 'POST',
         success: function (response) {
             console.log(response);
@@ -232,15 +232,13 @@ function showData(e) {
     var x = document.getElementsByClassName(target_class);
     if (x.length > 0) {
         var key = x[0].getAttribute("data-key");
-        var volume = x[0].getAttribute("data-volume");
         var duration = x[0].getAttribute("data-duration");
         var duration_flag = target_class.split('_')[2];
 
         var result = "Key: " + key;
         //result += "<br>";
-        result += "  Volume: " + volume;
         //result += "<br>";
-        result += "  Duration: " + duration_name[duration_flag];
+        result += "      Duration: " + duration_name[duration_flag];
         //result += "<br>";
         target_p.style.cssText = "text-align: center; color: white;background-color: black;font-weight: bold;";
         target_p.innerHTML = result;
@@ -330,7 +328,7 @@ function makeTableHTML(myArray) {
 
 }
 
-function merge(notes, dur, vol, color) {
+function merge(notes, dur, color) {
     var temp = Array.from(notes);
     for(var i = 0; i < temp.length; i++) {
         var note = temp[i].split('_')[0];
@@ -342,7 +340,6 @@ function merge(notes, dur, vol, color) {
             table_cell[j].style.cssText = color;
             table_cell[j].setAttribute("data-key", note);
             table_cell[j].setAttribute("data-duration", dur);
-            table_cell[j].setAttribute("data-volume", vol);
             table_cell[j].addEventListener("mouseover", showData, false);
             table_cell[j].addEventListener("mouseout", hideData, false);
 
@@ -382,10 +379,8 @@ function editNote(whichId){
     var x = document.getElementsByClassName(x_class_name);
     var key = whichId.split('_')[0];
     var duration = tempo;
-    var volume = 90;
     if (x.length > 0) {
         duration = x[0].getAttribute("data-duration");
-        volume = x[0].getAttribute("data-volume");
     }
 
     var form = "<div id = 'form'>";
@@ -404,7 +399,7 @@ function editNote(whichId){
 
     form += "    ";
 
-    form += " Volume: <input type='text' id='form_volume' placeholder='1-200'> ";
+    //form += " Volume: <input type='text' id='form_volume' placeholder='1-200'> ";
     form += "<br><br>";
 
     form += "<button style='background-color: cornflowerblue;' onclick='updateNote(\"" + whichId + "\")'>" + "Update" + "</button>   ";
@@ -447,11 +442,6 @@ function updateNote(whichId) {
     if (x.length > 0) {
          var cssText = x[0].style.cssText;
 
-        var volume = document.getElementById("form_volume").value;
-        if (volume == '') {
-            volume = 90;
-        }
-
         var new_duration = tempo;
         var notes_duration = ['w', 'h', 'q', 'e', 's'];
         var duration_flag = [];
@@ -483,7 +473,7 @@ function updateNote(whichId) {
             document.getElementById(tmp_id).className = new_class;
 
         }
-        merge(note_set, new_duration, volume, cssText);
+        merge(note_set, new_duration, cssText);
     }
     else {
         addNote(whichId);
@@ -508,11 +498,6 @@ function addNote(whichId) {
         }
     }
     var whichClass = whichId + "_" + duration_flag;
-
-    var volume = document.getElementById("form_volume").value;
-    if (volume == '') {
-        volume = 90;
-    }
     var note = whichId.split('_')[0];
 
     //update note in table
@@ -529,7 +514,7 @@ function addNote(whichId) {
     }
 
     var color = "background-color: DarkSlateBlue;";
-    merge(notes, duration, volume, color);
+    merge(notes, duration, color);
 
 }
 
@@ -537,7 +522,6 @@ var start = '';
 var start_class = '';
 var end = '';
 function clickAndDrop(e) {
-
     if ((start == '') && (end == '')) {
         var t = e.target;
 
@@ -563,7 +547,6 @@ function clickAndDrop(e) {
                 var start_cells = document.getElementsByClassName(start_class);
                 var duration_flag = start_class.split('_')[2];
                 var duration = start_cells[0].getAttribute("data-duration");
-                var volume = start_cells[0].getAttribute("data-volume");
                 var start_ids = [];
                 var end_ids = [];
                 var cssText = start_cells[0].style.cssText;
@@ -587,7 +570,7 @@ function clickAndDrop(e) {
                     end_ids.push(end_id);
                     document.getElementById(end_id).className = end_class_name;
                 }
-                merge(notes, duration, volume, cssText);
+                merge(notes, duration, cssText);
 
             }
         }
@@ -605,6 +588,7 @@ function editNoteHelper(e) {
 
 function addBeat() {
     var new_column = (1/(numerator*denominator)) * columns.length;
+    alert(new_column);
     //var table = document.getElementById("table");
     //var rows = table.rows;
 

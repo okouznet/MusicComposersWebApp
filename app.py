@@ -1,5 +1,11 @@
 from flask import *
 import PianoPlayer
+from mingus.containers import Track
+from mingus.containers import Composition
+from mingus.containers import Bar
+
+from mingus.containers import Note
+
 import os
 
 app = Flask(__name__)
@@ -51,13 +57,13 @@ def compose():
 @app.route('/play', methods=['GET','POST'])
 def play():
     #music = piano.make_queue(filename="/Users/alefevre/Documents/UndergraduateCourses/EECS481/MusicComposersWebApp/static/playback/for_elise_by_beethoven.mid")
-    chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
+    chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid", save=1)
     piano.clearTrack()
-    furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
+    furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid", save=1)
     piano.clearTrack()
-    moonlight = piano.make_queue(filename="static/playback/moonlight_sonata.mid")
+    moonlight = piano.make_queue(filename="static/playback/moonlight_sonata.mid", save=1)
     piano.clearTrack()
-    music = [furelise, chopin, moonlight]
+    music = [furelise[0], chopin[0], moonlight[0]]
     if request.method == 'POST':
         return render_template('play.html')
     else:
@@ -94,19 +100,15 @@ def edit():
         return render_template('edit.html', **options)
     else:
         data = request.get_json(silent=True)
+        #save composition to library
         if data is not None:
-            tracks = []
-            container = data['container']
-            for x in container:
-                n = []
-                for i in x:
-                    #n.append(str(i))
-                    print i
-               # piano.addTrack(notes=n)
-            #filename = str(data['file'])
-            #print filename
-            #piano.saveTrack(filename=filename)
-            #piano.clearTrack()
+            composition = data['container']
+            tempo = data['tempo']
+            length = data['length']
+            c = piano.get_composition(composition, tempo, length)
+            filename = str(data['file'])
+            piano.saveComposition(filename, c)
+
         dir = "static/library/"
         info = request.form
         files = []

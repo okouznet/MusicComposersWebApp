@@ -1,5 +1,8 @@
+from __future__ import division
 from mingus.containers import NoteContainer
 from mingus.containers import Note
+from mingus.containers import Bar
+
 from mingus.containers import Track
 from mingus.containers import Composition
 from mingus.containers.instrument import Piano
@@ -53,13 +56,22 @@ class PianoPlayer :
         file = path + filename + ".mid"
         midi_file_out.write_Track(file, t)
 
+    def saveComposition(self, filename, composition):
+        path = "static/library/"
+        file = path + filename + ".mid"
+        print file
+        midi_file_out.write_Composition(file, composition)
 
-    def buildComposition(self, compose):
+    def buildComposition(self, compose, save):
         c = Composition()
         count = 0
         #get components
         for track in compose:
-            t = self.track
+            t = ''
+            if (save == 0):
+                t = self.track
+            else:
+                t = Track()
             for bar in track:
                 for info in bar:
                     #get note information and duration
@@ -73,37 +85,50 @@ class PianoPlayer :
         file = midi_file_in.MIDI_to_Composition(filename)
 
         #get total count
-        count = []
-        i = -1
-        for bar in file[0][0]:
-            for info in bar:
-                if(info[0] == 0):
-                    i = i + 1
-                count.append(info[0] + i)
+        count = 0
+        i = 0
+        print "composition"
+        print file
+        for track in file[0]:
+            for bar in track:
+                print "bar"
+                for info in bar:
+                    print "add_file"
+                    print info
+                    if(info[0] == 0):
+                        info[0] = info[0] + 1
+                    count = count + 1
+
         #normalize count array
         count_total = []
-        for i in range(0, len(count)*4):
+        for i in range(0, count*4):
             count_total.append(0.0625 * i)
-        matrix = self.midi_matrix(track=file[0][0], total_count=len(count_total))
-        count.pop()
+        matrix = self.midi_matrix(composition=file[0], total_count=count_total)
+        #count.pop()
         return (matrix, count_total)
 
 
-    def midi_matrix(self, track, total_count=6):
+    def midi_matrix(self, composition, total_count):
         matrix = {}
+        print len(total_count)
         for n in self.notes:
             i = int(n)
-            matrix[i] = [0] * total_count
+            matrix[i] = [0] * len(total_count)
         count = 0
-        for bar in track:
-            for info in bar:
-                for n in info[2]:
-                    i = int(n)
-                    x = matrix[i]
+        for track in composition:
+            for bar in track:
+                for info in bar:
 
-                    x[count*4] = 1
-                    matrix[i] = x
-                count = count + 1
+
+                    for n in info[2]:
+
+                        i = int(n) + 12
+                        x = matrix[i]
+
+                        x[count*4] = 1
+                        matrix[i] = x
+
+                    count = count + 1
         return matrix
 
     def getMatrix(self):
@@ -114,10 +139,9 @@ class PianoPlayer :
         temp.reverse()
         return temp[0:len(temp) -11 - 1]
 
-    def make_queue(self, filename):
+    def make_queue(self, filename, save):
         file = midi_file_in.MIDI_to_Composition(filename)
-
-        composition = self.buildComposition(file[0])
+        composition = self.buildComposition(file[0], save)
         result = []
         for track in composition[0]:
 
@@ -126,12 +150,92 @@ class PianoPlayer :
                     temp = []
                     for n in notes[2]:
                         temp.append(int(n))
-                    print notes
                     if len(notes[2]) > 0:
                         result.append(temp)
-        return result
+        return result, composition[0]
+
+
+    def get_track(self, dict, length):
+        beats = dict.keys()
+        notes = dict.values()
+
+        track = Track()
+        bar = Bar()
+        for i in range(0, length):
+            beat = i / 16
+            if (beat in dict):
+                note = dict[beat][0]
+                if (bar.place_notes(note[0], note[1]) == False):
+                    track.add_bar(bar)
+                    bar = Bar()
+                    bar.place_notes(note[0], note[1])
+
+                # 0.0: [('E-3', 4), ('C-3', 2)],
+            else:
+
+                if (bar.place_rest(16) == False):
+                    track.add_bar(bar)
+                    bar = Bar()
+                    bar.place_rest(16)
+        print "track"
+        print track
+        return track
+
+    def get_composition(self, composition, tempo, length):
+        """
+
+        :param composition:
+        :param tempo:
+        :param length:
+        :return:
+        """
+        whole = tempo * 4
+        half = tempo * 2
+        quarter = tempo
+        eighth = tempo / 2
+        sixteenth = tempo / 4
+        duration_dict = {whole: 1, half: 2, quarter: 4, eighth: 8, sixteenth: 16}
+
+        c = Composition()
+
+        for track in composition:
+            composition_dict = {}
+            for bar in track:
+                n = note_converter(str(bar['key']))
+                dur = duration_dict[int(bar['duration'])]
+                count = ((float(bar['clock'])) - 32) / (128 * 4)
+                if count not in composition_dict:
+                    temp = []
+                    temp.append((Note(n), dur))
+                    composition_dict[count] = temp
+                else:
+                    x = composition_dict[count]
+                    x.append((Note(n), dur))
+                    composition_dict[count] = x
+                    # extract note
+                    # n.append(str(i))
+            t = self.get_track(dict=composition_dict, length=length)
+            c.add_track(t)
+        return c
+
+
+def note_converter(note):
+    """
+
+    :param note:
+    :return:
+    """
+    n = 'C-3'
+    if (len(note) == 2):
+        n = note[0] + '-' + note[1]
+    elif (len(note) == 3):
+        n = note[0:2] + '-' + note[2]
+    return Note(n)
 
 if __name__ == "__main__":
     p = PianoPlayer()
-    notes = p.getNotes()
-    print notes
+    file = "/Users/alefevre/Documents/Courses/EECS481/MusicComposersWebApp/static/library/stress.mid"
+    composition = p.make_queue(file, 0)
+    file2 = "/Users/alefevre/Documents/Courses/EECS481/MusicComposersWebApp/static/library/miditoComposition.mid"
+    print composition[1]
+    #p.saveComposition(file2, composition[1])

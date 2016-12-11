@@ -78,16 +78,19 @@
         if (e.target !== e.currentTarget) {
             var id = e.target.id;
             PlayClickedNote(id);
-            document.getElementById(id).style.background = "cornflowerblue";
+            if(!play_song){
+                document.getElementById(id).style.background = "cornflowerblue";
+            }
         }
         e.stopPropagation();
         e.preventDefault();
     }
 
     function clickUp(e) {
-        var id = e.target.id;
+        if(!play_song) {
+             var id = e.target.id;
 
-        var div = document.getElementById(id);
+            var div = document.getElementById(id);
             var hasClass = div.classList.contains('whitekey');
             if (hasClass == true) {
 
@@ -96,6 +99,8 @@
             else {
                 document.getElementById(id).style.background = "black";
             }
+
+        }
 
     }
 
@@ -206,8 +211,17 @@
         }
     }
 
+    Set.prototype.difference = function(setB) {
+        var difference = new Set(this);
+        for (var elem of setB) {
+            difference.delete(elem);
+        }
+        return difference;
+    };
     var keys = {};
     var full_chord = [];
+    var prev_keys = {};
+
     var note_modulos = { 90:0, 83:1, 88:2, 68:3, 67:4, 86:5, 71:6,
         66:7, 72:8, 78:9, 74:10, 77:11};
     var keyup = 1;
@@ -271,34 +285,56 @@
         else {
             for (var i in keys) {
                 full_chord.push(note_map[i]);
-                 if(id_convert[i] != null) {
-                    document.getElementById(id_convert[i]).style.background = "cornflowerblue";
+                if(id_convert[i] != null) {
+                    highlightKey(id_convert[i], "cornflowerblue");
                 }
+
+
             }
-            PlayNote(full_chord);
+            var A = Object.keys(keys);
+            var B = Object.keys(prev_keys);
+            var diff = A.filter(function(x) { return B.indexOf(x) < 0 });
+            var test = A.toString() + ' ' + B.toString();
+            //alert(diff);
+            if (diff.length != 0) {
+                PlayNote(full_chord);
+                prev_keys = keys;
+            }
         }
         }
 
     };
+
     document.onkeyup = function(event) {
-        for (var i in keys) {
-          if(id_convert[i] != null) {
-              var div = document.getElementById(id_convert[i]);
-              var hasClass = div.classList.contains('whitekey');
-              if (hasClass == true) {
-                  document.getElementById(id_convert[i]).style.background = "white";
-              }
-              else {
-                  document.getElementById(id_convert[i]).style.background = "black";
-              }
-          }
+        if(!play_song) {
+            for (var i in keys) {
+                if(id_convert[i] != null) {
+                    resetKeyColor(id_convert[i]);
+                }
+            }
         }
+
         keyup = 0;
-         full_chord = [];
+        full_chord = [];
+
+        prev_keys= {};
         delete keys[event.which];
     };
     //event handlers
+function resetKeyColor(whichId) {
+    var div = document.getElementById(whichId);
+    var hasClass = div.classList.contains('whitekey');
+    if (hasClass == true) {
+        document.getElementById(whichId).style.background = "white";
+    }
+    else {
+        document.getElementById(whichId).style.background = "black";
+    }
+}
 
+function highlightKey(whichId, color) {
+    document.getElementById(whichId).style.background = color;
+}
 </script>
 <header>
     <div class="header1">
