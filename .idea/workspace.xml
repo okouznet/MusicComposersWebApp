@@ -2,6 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="269fbf3b-4d95-449e-abca-b7de98e349af" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/filepiano.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/filetemp.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/miditoComposition1.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/stress2.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/stressoctavesaved.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/stresstest.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/test3.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/testlongkeydown.mid" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/static/library/touchtest.mid" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/library/stress.mid" afterPath="$PROJECT_DIR$/static/library/stress.mid" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PianoPlayer.py" afterPath="$PROJECT_DIR$/PianoPlayer.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.py" afterPath="$PROJECT_DIR$/app.py" />
@@ -32,11 +42,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="play.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="play.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/play.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3525">
-              <caret line="286" column="45" lean-forward="true" selection-start-line="286" selection-start-column="45" selection-end-line="286" selection-end-column="45" />
+            <state relative-caret-position="585">
+              <caret line="312" column="32" lean-forward="false" selection-start-line="312" selection-start-column="32" selection-end-line="312" selection-end-column="32" />
               <folding />
             </state>
           </provider>
@@ -45,18 +55,8 @@
       <file leaf-file-name="compose.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/compose.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="56" column="46" lean-forward="false" selection-start-line="56" selection-start-column="36" selection-end-line="56" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="edit.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/edit.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="524" column="0" lean-forward="false" selection-start-line="524" selection-start-column="0" selection-end-line="524" selection-end-column="0" />
+            <state relative-caret-position="131">
+              <caret line="215" column="28" lean-forward="true" selection-start-line="215" selection-start-column="4" selection-end-line="215" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -72,25 +72,35 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PianoPlayer.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PianoPlayer.py">
+      <file leaf-file-name="edit.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/edit.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="79">
-              <caret line="112" column="30" lean-forward="false" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
+            <state relative-caret-position="224">
+              <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="470">
+              <caret line="109" column="41" lean-forward="true" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
               <folding>
-                <element signature="e#0#31#0" expanded="true" />
+                <element signature="e#0#19#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app.py">
+      <file leaf-file-name="PianoPlayer.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PianoPlayer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="619">
-              <caret line="62" column="22" lean-forward="true" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
+            <state relative-caret-position="596">
+              <caret line="121" column="27" lean-forward="false" selection-start-line="121" selection-start-column="27" selection-end-line="121" selection-end-column="27" />
               <folding>
-                <element signature="e#0#19#0" expanded="true" />
+                <element signature="e#0#43#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,8 +117,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>header1</find>
-      <find>showdata</find>
       <find>deleten</find>
       <find>numerator*denominator</find>
       <find>numerator</find>
@@ -127,7 +135,6 @@
       <find>tbody</find>
       <find>_q</find>
       <find>ei</find>
-      <find>alert</find>
       <find>button</find>
       <find>vol</find>
       <find>volume</find>
@@ -137,6 +144,9 @@
       <find>saveFile</find>
       <find>click</find>
       <find>make_</find>
+      <find>note_con</find>
+      <find>alert</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -155,11 +165,11 @@
         <option value="$PROJECT_DIR$/templates/index.html" />
         <option value="$PROJECT_DIR$/static/indexStyles.css" />
         <option value="$PROJECT_DIR$/static/editStyle.css" />
-        <option value="$PROJECT_DIR$/templates/compose.html" />
-        <option value="$PROJECT_DIR$/templates/play.html" />
         <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/templates/edit.html" />
         <option value="$PROJECT_DIR$/PianoPlayer.py" />
+        <option value="$PROJECT_DIR$/templates/compose.html" />
+        <option value="$PROJECT_DIR$/templates/play.html" />
       </list>
     </option>
   </component>
@@ -170,9 +180,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="37" />
     <option name="width" value="1280" />
-    <option name="height" value="726" />
+    <option name="height" value="800" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -189,8 +198,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -287,6 +294,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -566,7 +575,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="37" width="1280" height="726" extended-state="0" />
+    <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19296876" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -950,51 +959,50 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
           <caret line="126" column="26" lean-forward="false" selection-start-line="126" selection-start-column="26" selection-end-line="126" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/compose.html">
+    <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="56" column="46" lean-forward="false" selection-start-line="56" selection-start-column="36" selection-end-line="56" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/play.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3525">
-          <caret line="286" column="45" lean-forward="true" selection-start-line="286" selection-start-column="45" selection-end-line="286" selection-end-column="45" />
-          <folding />
+        <state relative-caret-position="470">
+          <caret line="109" column="41" lean-forward="true" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/edit.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="524" column="0" lean-forward="false" selection-start-line="524" selection-start-column="0" selection-end-line="524" selection-end-column="0" />
+        <state relative-caret-position="224">
+          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PianoPlayer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="79">
-          <caret line="112" column="30" lean-forward="false" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
+        <state relative-caret-position="596">
+          <caret line="121" column="27" lean-forward="false" selection-start-line="121" selection-start-column="27" selection-end-line="121" selection-end-column="27" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
+            <element signature="e#0#43#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
+    <entry file="file://$PROJECT_DIR$/templates/compose.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="619">
-          <caret line="62" column="22" lean-forward="true" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="131">
+          <caret line="215" column="28" lean-forward="true" selection-start-line="215" selection-start-column="4" selection-end-line="215" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/play.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="312" column="32" lean-forward="false" selection-start-line="312" selection-start-column="32" selection-end-line="312" selection-end-column="32" />
+          <folding />
         </state>
       </provider>
     </entry>
