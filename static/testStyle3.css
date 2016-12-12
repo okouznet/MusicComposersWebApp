@@ -1,0 +1,161 @@
+html, body {
+  background: black;
+  font-family: Arial;
+  height: 100%;
+  margin: 0;
+}
+
+header {
+	/*background-color: gray;*/
+    background-color: black;
+	color: white;
+	width: 100%;
+}
+.header {
+    text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+	color: white;
+	padding-top: 10px;
+	font-size: 28px;
+}
+
+table, td, th {
+    color: white;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.header:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: cornflowerblue;
+}
+
+h1 {
+    color: white;
+}
+
+.header1 {
+	color:white;
+	text-align: center;
+	padding-top: 10px;
+	width: 100%;
+}
+p {
+    color:white;
+    text-align: center;
+}
+.piano {
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+
+}
+.key {
+  display: inline-block;
+  position: relative;
+  margin: 0 2px;
+  width: 6%;
+  max-width: 85px;
+}
+.key .whitekey {
+  cursor: pointer;
+  color: black;
+  font-weight: bold;
+  background: white;
+  box-shadow: inset 0 1px 0px #ffffff, inset 0 -1px 0px #ffffff, inset 1px 0px 0px #ffffff, inset -1px 0px 0px #ffffff, 0 4px 3px rgba(0, 0, 0, 0.7), inset 0 -1px 0px #ffffff, inset 1px 0px 0px #ffffff, inset -1px -1px 15px rgba(0, 0, 0, 0.5), -3px 4px 6px rgba(0, 0, 0, 0.5);
+  display: block;
+  height: 300px;
+}
+
+.key .blackkey {
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  content: "";
+  box-shadow: inset 0px -1px 2px rgba(255, 255, 255, 0.4), 0 2px 3px rgba(0, 0, 0, 0.4);
+  background: black;
+  border-width: 1px 3px 8px;
+  border-style: solid;
+  border-color: #666 #222 #111 #555;
+  height: 160px;
+  position: absolute;
+  top: 0px;
+  right: -40%;
+  width: 70%;
+  z-index: 10;
+}
+
+.centerButtons {
+    text-align: center;
+    /*float: center;*/
+}
+
+.key .whitekey:hover,
+.key .whitekey.hover {
+  background: cornflowerblue;
+}
+
+.key .blackkey:hover,
+.key .blackkey.hover {
+    background-color: cornflowerblue;
+}
+button:active{
+    background:rosybrown;
+}
+button:hover{
+    background:rosybrown;
+}
+button {
+    background-color: cornflowerblue;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    margin: 0 auto;
+}
+
+.sub {
+    background-color: cornflowerblue;
+    color: white;
+    border: cornflowerblue;
+}
+
+.sub1 {
+    background-color: cornflowerblue;
+    color: white;
+    border: cornflowerblue;
+    margin: 0 auto;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+footer {
+	background-color: black;
+	color: white;
+	clear: both;
+	text-align: center;
+	padding: 5px;
+	margin-top: 20px;
+	position: relative;
+	bottom:0px;
+	width: 100%;
+}
+
+#library-form {
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+}

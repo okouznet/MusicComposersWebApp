@@ -5,15 +5,427 @@
 <head>
     <meta charset="UTF-8">
     <title>Music Composer</title>
-    <link rel="stylesheet" href="/static/composeStyle.css"/>
+    <link rel="stylesheet" href="/static/testStyle3.css"/>
+
+{#    <script type='text/javascript' src='/static/keySettings.js'></script>#}
+
 </head>
 <header>
     <div class="header1">
       <a class="header" id="nav_home" href="{{url_for('homepage')}}">Music Composer</a>
     </div>
 </header>
-<h1>Settings</h1>
 <body>
+    <p>Customize which keys correspond to the notes:</p>
+<script>
+
+    ckey = "z";
+    cskey = "s"; //s
+    dkey = "x"; //x
+    dskey = "d"; //d
+    ekey = "c"; //c
+    fkey = "v"; //v
+    fskey = "g"; //g
+    gkey = "b"; //b
+    gskey = "h"; //h
+    akey = "n"; //n
+    askey = "j"; //j
+    bkey = "m"; //m
+
+    loadDefault = 0;
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+
+    window.onload = function () {
+
+        var mode = getCookie("defaultMode");
+        if (mode == "1") {
+            //update key vals
+            ckey = getCookie("ckey");
+            if(ckey == ""){
+                ckey = "z";
+            }
+            cskey = getCookie("cskey");
+            if(cskey == ""){
+                cskey = "s";
+            }
+            dkey = getCookie("dkey");
+            if(dkey == ""){
+                dkey = "x";
+            }
+            dskey = getCookie("dskey");
+            if(dskey == ""){
+                dskey = "d";
+            }
+            ekey = getCookie("ekey");
+            if(ekey == ""){
+                ekey = "c";
+            }
+            fkey = getCookie("fkey");
+            if(fkey == ""){
+                fkey = "v";
+            }
+            fskey = getCookie("fskey");
+            if(fskey == ""){
+                fskey = "g";
+            }
+            gkey = getCookie("gkey");
+            if(gkey == ""){
+                gkey = "b";
+            }
+            gskey = getCookie("gskey");
+            if(gskey == ""){
+                gskey = "h";
+            }
+            akey = getCookie("akey");
+            if(akey == ""){
+                akey = "n";
+            }
+            askey = getCookie("askey");
+            if(askey == ""){
+                askey = "j";
+            }
+            bkey = getCookie("bkey");
+            if(bkey == ""){
+                bkey = "m";
+            }
+
+            var message = getCookie("stop");
+            if(!(message == "")){
+                document.getElementById("error").innerHTML = "Please enter a lower case letter or 'space'";
+            }
+
+        }
+
+
+        //var exists = document.cookie.match(/^(.*;)?defaultMode=[^;]+(.*)?$/);
+        //console.log(exists);
+
+
+        document.getElementById("c").innerHTML = ckey;
+        document.getElementById("cs").innerHTML = cskey;
+        document.getElementById("d").innerHTML = dkey;
+        document.getElementById("ds").innerHTML = dskey;
+        document.getElementById("e").innerHTML = ekey;
+        document.getElementById("f").innerHTML = fkey;
+        document.getElementById("fs").innerHTML = fskey;
+        document.getElementById("g").innerHTML = gkey;
+        document.getElementById("gs").innerHTML = gskey;
+        document.getElementById("a").innerHTML = akey;
+        document.getElementById("as").innerHTML = askey;
+        document.getElementById("b").innerHTML = bkey;
+
+        document.cookie="defaultMode=" + loadDefault + ";path=/";
+        document.cookie="ckey=" + ckey + ";path=/";
+
+    };
+
+    ///
+
+
+function NoteChange(noteVal, keyVal) {
+       //Function to change the key press for the corresponding note
+
+      // Indicate that we are not going to load default any more
+      // and update cookie accordingly
+       window['loadDefault'] = 1;
+       document.cookie="defaultMode=" + loadDefault +";path=/";
+
+       //make sure valid key value
+        if(!(keyVal == "a" || keyVal == "b" || keyVal == "c" || keyVal == "d" || keyVal == "e" || keyVal == "f"
+            || keyVal == "g" || keyVal == "h" || keyVal == "i" || keyVal == "j" || keyVal == "k" || keyVal == "l"
+            || keyVal == "m" || keyVal == "n" || keyVal == "o" || keyVal == "p" || keyVal == "q" || keyVal == "r"
+            || keyVal == "s" || keyVal == "t" || keyVal == "u" || keyVal == "v" || keyVal == "w" || keyVal == "x"
+            || keyVal == "y" || keyVal == "z" || keyVal == "space")){
+            document.getElementById("error").innerHTML = "Please enter a lower case letter or 'space' ";
+            var mess = "bad";
+            document.cookie = "message=" + mess + ";path=/";
+        }
+        else {
+            var mess2;
+            document.cookie = "message" + mess2 + ";path=/";
+            // Update key values and corresponding cookies
+            if (noteVal == "ckey") {
+                ckey = keyVal;
+                document.getElementById("c").innerHTML = ckey;
+                document.cookie = "ckey=" + ckey + ";path=/";
+            }
+            else if (noteVal == "cskey") {
+                cskey = keyVal;
+                document.getElementById("cs").innerHTML = cskey;
+                document.cookie = "cskey=" + cskey + ";path=/";
+            }
+            else if (noteVal == "dkey") {
+                dkey = keyVal;
+                document.getElementById("d").innerHTML = dkey;
+                document.cookie = "dkey=" + dkey + ";path=/";
+            }
+            else if (noteVal == "dskey") {
+                dskey = keyVal;
+                document.getElementById("ds").innerHTML = dskey;
+                document.cookie = "dskey=" + dskey + ";path=/";
+            }
+            else if (noteVal == "ekey") {
+                ekey = keyVal;
+                document.getElementById("e").innerHTML = ekey;
+                document.cookie = "ekey=" + ekey + ";path=/";
+            }
+            else if (noteVal == "fkey") {
+                fkey = keyVal;
+                document.getElementById("f").innerHTML = fkey;
+                document.cookie = "fkey=" + fkey + ";path=/";
+            }
+            else if (noteVal == "fskey") {
+                fskey = keyVal;
+                document.getElementById("fs").innerHTML = fskey;
+                document.cookie = "fskey=" + fskey + ";path=/";
+            }
+            else if (noteVal == "gkey") {
+                gkey = keyVal;
+                document.getElementById("g").innerHTML = gkey;
+                document.cookie = "gkey=" + gkey + ";path=/";
+            }
+            else if (noteVal == "gskey") {
+                gskey = keyVal;
+                document.getElementById("gs").innerHTML = gskey;
+                document.cookie = "gskey=" + gskey + ";path=/";
+            }
+            else if (noteVal == "akey") {
+                akey = keyVal;
+                document.getElementById("a").innerHTML = akey;
+                document.cookie = "akey=" + akey + ";path=/";
+            }
+            else if (noteVal == "askey") {
+                askey = keyVal;
+                document.getElementById("as").innerHTML = askey;
+                document.cookie = "askey=" + askey + ";path=/";
+            }
+            else if (noteVal == "bkey") {
+                bkey = keyVal;
+                document.getElementById("b").innerHTML = bkey;
+                document.cookie = "bkey=" + bkey + ";path=/";
+            }
+
+        }
+
+       //loadDefault = loadDefault + 1;
+        return false;
+   }
+
+   function BradNotes() {
+       //Set notes to his key preference
+
+       window['loadDefault'] = 1;
+       document.cookie="defaultMode=" + loadDefault +";path=/";
+
+       // Update key values and corresponding cookies
+       //if(noteVal == "ckey"){
+       //    ckey = keyVal;
+       //    document.getElementById("c").innerHTML = ckey;
+       //    document.cookie="ckey=" + ckey + ";path=/";
+       //}
+
+       ckey = "w";
+       cskey = "h";
+       dkey = "y";
+       dskey = "u";
+       ekey = "r";
+       fkey = "i";
+       fskey = "j";
+       gkey = "space";
+       gskey = "p";
+       akey = "l";
+       askey = "v";
+       bkey = "d";
+
+       // Change the "Current Note" category on page
+       document.getElementById("c").innerHTML = ckey;
+       document.getElementById("cs").innerHTML = cskey;
+       document.getElementById("d").innerHTML = dkey;
+       document.getElementById("ds").innerHTML = dskey;
+       document.getElementById("e").innerHTML = ekey;
+       document.getElementById("f").innerHTML = fkey;
+       document.getElementById("fs").innerHTML = fskey;
+       document.getElementById("g").innerHTML = gkey;
+       document.getElementById("gs").innerHTML = gskey;
+       document.getElementById("a").innerHTML = akey;
+       document.getElementById("as").innerHTML = askey;
+       document.getElementById("b").innerHTML = bkey;
+
+       loadDefault = 1;
+
+       //Update cookie
+       //document.cookie="defaultMode=" + loadDefault +";path=/";
+       document.cookie="ckey=" + ckey + ";path=/";
+       document.cookie="cskey=" + cskey + ";path=/";
+       document.cookie="dkey=" + dkey + ";path=/";
+       document.cookie="dskey=" + dskey + ";path=/";
+       document.cookie="ekey=" + ekey + ";path=/";
+       document.cookie="fkey=" + fkey + ";path=/";
+       document.cookie="fskey=" + fskey + ";path=/";
+       document.cookie="gkey=" + gkey + ";path=/";
+       document.cookie="gskey=" + gskey + ";path=/";
+       document.cookie="akey=" + akey + ";path=/";
+       document.cookie="askey=" + askey + ";path=/";
+       document.cookie="bkey=" + bkey + ";path=/";
+
+       // Do not allow page to refresh
+       return false;
+   }
+
+</script>
+    <p class = "error" id = "error"></p>
+    <table>
+        <tr>
+            <th>Piano Note</th>
+            <th>Current Key</th>
+            <th>New Key</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>C</td>
+            <td id = 'c'></td>
+            <form onsubmit="return NoteChange(document.getElementById('ckey').id, document.getElementById('ckey').value)">
+            <td><input type='text' id='ckey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>C#</td>
+            <td id = 'cs'></td>
+            <form onsubmit="return NoteChange(document.getElementById('cskey').id, document.getElementById('cskey').value)">
+            <td><input type='text' id='cskey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>D</td>
+            <td id = 'd'></td>
+            <form onsubmit="return NoteChange(document.getElementById('dkey').id, document.getElementById('dkey').value)">
+            <td><input type='text' id='dkey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>D#</td>
+            <td id = 'ds'></td>
+            <form onsubmit="return NoteChange(document.getElementById('dskey').id, document.getElementById('dskey').value)">
+            <td><input type='text' id='dskey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>E</td>
+            <td id = 'e'></td>
+            <form onsubmit="return NoteChange(document.getElementById('ekey').id, document.getElementById('ekey').value)">
+            <td><input type='text' id='ekey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>F</td>
+            <td id = 'f'></td>
+            <form onsubmit="return NoteChange(document.getElementById('fkey').id, document.getElementById('fkey').value)">
+            <td><input type='text' id='fkey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>F#</td>
+            <td id = 'fs'></td>
+            <form onsubmit="return NoteChange(document.getElementById('fskey').id, document.getElementById('fskey').value)">
+            <td><input type='text' id='fskey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>G</td>
+            <td id = 'g'></td>
+            <form onsubmit="return NoteChange(document.getElementById('gkey').id, document.getElementById('gkey').value)">
+            <td><input type='text' id='gkey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>G#</td>
+            <td id = 'gs'></td>
+            <form onsubmit="return NoteChange(document.getElementById('gskey').id, document.getElementById('gskey').value)">
+            <td><input type='text' id='gskey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>A</td>
+            <td id = 'a'></td>
+            <form onsubmit="return NoteChange(document.getElementById('akey').id, document.getElementById('akey').value)">
+            <td><input type='text' id='akey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>A#</td>
+            <td id = 'as'></td>
+            <form onsubmit="return NoteChange(document.getElementById('askey').id, document.getElementById('askey').value)">
+            <td><input type='text' id='askey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+        <tr>
+            <td>B</td>
+            <td id = 'b'></td>
+            <form onsubmit="return NoteChange(document.getElementById('bkey').id, document.getElementById('bkey').value)">
+            <td><input type='text' id='bkey'></td>
+            <td>
+                <input class="sub" type="submit" name="Submit" value="Submit">
+            </td>
+            </form>
+        </tr>
+    </table>
+
+    <br>  <br>
+    <br>  <br>
+
+    <div class="wrapper">
+     <form onsubmit="return BradNotes()">
+         <input class="sub1" type="submit" name="BradKeys" value="Brad's Keys">
+     </form>
+    </div>
 
 </body>
 

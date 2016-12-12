@@ -46,10 +46,7 @@ class PianoPlayer :
         :return: none
         """
         self.track = Track(Piano())
-        self.matrix = {}
-        for n in self.notes:
-            i = int(n)
-            self.matrix[i] = [0] * 10
+
 
     def saveTrack(self, filename):
         """

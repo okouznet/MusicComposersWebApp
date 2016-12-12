@@ -15,13 +15,13 @@ def homepage():
 #settings page
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    piano.clearTrack()
     return render_template('settings.html')
 
 #compose page
 #compose page
 @app.route('/compose', methods=['GET', 'POST'])
 def compose():
-    piano.clearTrack()
     if request.method == 'POST':
         #if saving file
         save = int(request.form["save"])
