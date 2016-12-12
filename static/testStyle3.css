@@ -31,7 +31,20 @@ table, td, th {
 	font-weight: bold;
 	color: cornflowerblue;
 }
-
+.header2 {
+	text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+	color: white;
+	padding-top: 15px;
+	font-size: 22px;
+    padding-left:2em;
+}
+.header2:hover {
+	text-decoration: none;
+	font-weight: bold;
+	color: rosybrown;
+}
 h1 {
     color: white;
 }
