@@ -21,6 +21,7 @@ def settings():
 #compose page
 @app.route('/compose', methods=['GET', 'POST'])
 def compose():
+    piano.clearTrack()
     if request.method == 'POST':
         #if saving file
         save = int(request.form["save"])
@@ -50,6 +51,7 @@ def compose():
 #play page
 @app.route('/play', methods=['GET','POST'])
 def play():
+    piano.clearTrack()
     chopin = piano.make_queue(filename="static/playback/chopin_fantasie_imp.mid")
     piano.clearTrack()
     furelise = piano.make_queue(filename="static/playback/for_elise_by_beethoven.mid")
@@ -75,6 +77,7 @@ def play():
 #edit page
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
+    piano.clearTrack()
     dir_name = os.path.dirname(os.path.realpath(__file__)) + "/static/library"
     notes = piano.getNotes() # get all possible notes C1 to C8
     if (request.method == 'GET'):
@@ -132,6 +135,7 @@ def edit():
 #library
 @app.route('/library', methods=['GET', 'POST'])
 def library():
+    piano.clearTrack()
     dir_name = os.path.dirname(os.path.realpath(__file__)) + "/static/library"
     if request.method =='POST':
         op = str(request.form.get('op'))
