@@ -314,7 +314,7 @@
    }
 
    function HighOctave() {
-       if(octave <= 6){
+       if(octave <= 5){
            octave = octave +1;
        }
        document.getElementById('oct').innerHTML = "Current octave: " + octave;
@@ -551,7 +551,10 @@
             //handle empty array
             if(temp.length > 0) {
                 if (Track.length == 0) {
-                    Track.push(temp)
+                    var tmp = [];
+                     var n = {key: MIDI.noteToKey[note_map[temp3]], duration: end - start, volume: 1};
+                     tmp.push(n);
+                    Track.push(tmp)
                 }
                 Track.push(temp);
             }
